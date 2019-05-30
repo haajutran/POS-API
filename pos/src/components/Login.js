@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { actionCreators } from "../store/Login";
 import { Form, Icon, Input, Button, Checkbox, Row, Col } from "antd";
 
 class Login extends Component {
@@ -15,6 +18,10 @@ class Login extends Component {
       }
     });
   };
+
+  componentDidMount() {
+    this.props.requestDefRVCList();
+  }
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -80,4 +87,7 @@ class Login extends Component {
 
 const LoginForm = Form.create()(Login);
 
-export default LoginForm;
+export default connect(
+  state => state.login,
+  dispatch => bindActionCreators(actionCreators, dispatch)
+)(LoginForm);
