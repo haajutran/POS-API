@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actionCreators } from "../store/Login";
-import { Form, Icon, Input, Button, Checkbox, Row, Col } from "antd";
+import { Form, Icon, Input, Button, Select, Row, Col } from "antd";
+
+const { Option } = Select;
 
 class Login extends Component {
   constructor(props) {
@@ -25,6 +27,7 @@ class Login extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { defRVCList } = this.props;
     return (
       <div className="login-page">
         <Row type="flex" justify="center">
@@ -37,17 +40,17 @@ class Login extends Component {
                     rules: [
                       { required: true, message: "Please input your username!" }
                     ]
-                  })(
-                    <Input
-                      prefix={
-                        <Icon
-                          type="user"
-                          style={{ color: "rgba(0,0,0,.25)" }}
-                        />
-                      }
-                      placeholder="Username"
-                    />
-                  )}
+                  })()
+                  // <Select placeholder="">
+                  //   {defRVCList &&
+                  //     defRVCList.map(item => (
+                  //       <Option value="1">{item}</Option>
+                  //     ))}
+                  //   {/* <Option value="1">Option 1</Option>
+                  //   <Option value="2">Option 2</Option>
+                  //   <Option value="3">Option 3</Option> */}
+                  // </Select>
+                  }
                 </Form.Item>
                 <Form.Item>
                   {getFieldDecorator("password", {

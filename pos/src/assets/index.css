@@ -1,0 +1,44 @@
+#components-layout-demo-custom-trigger .trigger {
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+#components-layout-demo-custom-trigger .trigger:hover {
+  color: #1890ff;
+}
+
+#components-layout-demo-custom-trigger .logo {
+  height: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px;
+}
+
+.ant-layout {
+  height: 100vh;
+}
+.ant-menu.ant-menu-light {
+  height: 100vh;
+}
+
+.ant-layout-header .trigger.anticon {
+  font-size: 18px;
+  margin-left: 20px;
+}
+
+.square {
+  border: 1px solid black;
+  height: 90px;
+  width: 90px;
+  line-height: 90px;
+  text-align: center;
+  border-radius: 8px;
+  vertical-align: middle;
+}
+
+.square.pick {
+  background: #33ec7a;
+  /* color: #fff; */
+}

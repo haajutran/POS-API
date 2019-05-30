@@ -36,21 +36,15 @@ export const login = async data => {
     });
 };
 
-export const get = url => {
-  console.log(constant.BASE_URL + url);
-  qwest.get(constant.BASE_URL + url).then(response => {
-    console.log(response);
-  });
-  //   console.log(res);
-  //   return await axios
-  //     .get(constant.BASE_URL + url)
-  //     .then(res => {
-  //       console.log(res);
-  //       return res;
-  //     })
-  //     .catch(error => {
-  //       return error.response;
-  //     });
+export const get = async url => {
+  return await axios
+    .get(constant.BASE_URL + url)
+    .then(res => {
+      return res;
+    })
+    .catch(error => {
+      return error.response;
+    });
 };
 
 export const post = async (url, data) => {
