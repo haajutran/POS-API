@@ -17,10 +17,10 @@
 }
 
 .ant-layout {
-  height: 100vh;
+  min-height: 100vh;
 }
 .ant-menu.ant-menu-light {
-  height: 100vh;
+  min-height: 100%;
 }
 
 .ant-layout-header .trigger.anticon {

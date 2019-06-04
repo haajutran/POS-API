@@ -7,14 +7,22 @@ import Layout from "./components/Layout";
 import BlankLayout from "./components/BlankLayout";
 
 import Home from "./components/home";
+import TableMap from "./components/TableMap";
 import About from "./components/about";
 import Login from "./components/Login";
 
-var currentUrl = window.location.pathname.split("/");
-console.log(currentUrl);
+var currentUrl = window.location.pathname.split("/")[1];
+// console.log(currentUrl);
+
+// function checkAuth() {
+//   const posUser = localStorage.getItem("posUser");
+//   if (!posUser || posUser.length < 1) {
+//     window.location.replace("/login");
+//   }
+// }
 
 function App() {
-  return currentUrl[1] === "login" ? (
+  return currentUrl === "login" ? (
     <BlankLayout>
       <Switch>
         <Route exact path="/login" component={Login} />
@@ -24,6 +32,7 @@ function App() {
     <Layout>
       <Switch>
         <Route exact path="/" component={Home} />
+        <Route path="/tablemap" component={TableMap} />
         <Route path="/about" component={About} />
       </Switch>
     </Layout>

@@ -3,10 +3,12 @@ import thunk from "redux-thunk";
 import { routerReducer, routerMiddleware } from "react-router-redux";
 
 import * as Login from "./Login";
+import * as TableMap from "./TableMap";
 
 export default function configureStore(history, initialState) {
   const reducers = {
-    login: Login.reducer
+    login: Login.reducer,
+    tableMap: TableMap.reducer
   };
 
   const middleware = [thunk, routerMiddleware(history)];

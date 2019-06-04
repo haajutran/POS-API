@@ -9,19 +9,16 @@ export const actionCreators = {
     dispatch({ type: requestDefRVCListType });
     const res = await dataServices.get("api/DefRVCList/GetDefRVCLists");
     if (res.status === 200) {
-      // var list = JSON.stringify(res.data[0])
-      //   .toString()
-      //   .replace("{", "")
-      //   .replace("}", "")
-      //   .split(",");
-      // var aaa = [];
-      // list.map(item => {
-      //   console.log(item);
-      // });
-      // var obj = JSON.parse("[" + list + "]");
-
-      // console.log(list);
-      dispatch({ type: receiveDefRVCListType, defRVCList: res.data[0] });
+      dispatch({ type: receiveDefRVCListType, defRVCList: res.data });
+    }
+  },
+  login: data => async () => {
+    // console.log(data);
+    const res = await dataServices.get(
+      `api/LoginPOS/GetUserName?RVCNo=${data.rvcNo}&Password=${data.password}`
+    );
+    if (res.status === 200) {
+      return res.data[0];
     }
   }
 };
