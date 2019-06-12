@@ -4,27 +4,6 @@ import { connect } from "react-redux";
 import { actionCreators } from "../store/TableMap";
 import { List } from "antd";
 
-const data = [
-  {
-    title: "Title 1"
-  },
-  {
-    title: "Title 2"
-  },
-  {
-    title: "Title 3"
-  },
-  {
-    title: "Title 4"
-  },
-  {
-    title: "Title 5"
-  },
-  {
-    title: "Title 6"
-  }
-];
-
 class TableMap extends Component {
   constructor(props) {
     super(props);
@@ -32,20 +11,26 @@ class TableMap extends Component {
   }
 
   componentDidMount() {
+    this.props.requestTableTypes();
     this.props.requestTableAreas();
   }
 
+  getImage(item) {
+    const { tableTypes } = this.props;
+    return tableTypes.find(i => i.tableType1 === item.tableType).imageNull;
+  }
+
   render() {
-    const { tableAreas, isLoading } = this.props;
-    console.log(tableAreas);
+    const { tableAreas, tableTypes, isLoading } = this.props;
+    console.log(tableTypes);
     return (
       <div>
-        <h2>Room</h2>
+        <h2>Table Map</h2>
         {isLoading ? (
           <h3>Loading...</h3>
         ) : (
           <div>
-            {tableAreas &&
+            {tableTypes && tableAreas.length > 0 ? (
               tableAreas.map(ta => (
                 <div>
                   <h3>{ta.tableAreaName}</h3>
@@ -62,12 +47,59 @@ class TableMap extends Component {
                     dataSource={ta.tableMaps}
                     renderItem={(item, index) => (
                       <List.Item>
-                        <div className={`square`}>{item.tableCode}</div>
+                        {item.checkNo !== "0" ? (
+                          <div>
+                            <img
+                              style={{ width: "100%" }}
+                              src={
+                                "data:image/png;base64, " +
+                                tableTypes.find(
+                                  i => i.tableType1 === item.tableType
+                                ).imagePickup
+                              }
+                              alt="img"
+                            />
+
+                            <div className="centered">
+                              <p className="table-info">
+                                <span>{item.tableCode}</span>|
+                                <span>
+                                  {item.tGuest}/{item.tChild}
+                                </span>
+                                |<span>({item.tSubtable})</span>
+                              </p>
+                              <p>{item.amount}</p>
+                              <p>{item.openTime}</p>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <img
+                              style={{ width: "100%" }}
+                              src={
+                                "data:image/png;base64, " + this.getImage(item)
+                                // tableTypes.find(
+                                //   i => i.tableType1 === item.tableType
+                                // ).imageNull
+                              }
+                              alt="img"
+                            />
+
+                            <div className="centered">
+                              <p className="table-info">
+                                <span>{item.tableCode}</span>
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </List.Item>
                     )}
                   />
                 </div>
-              ))}
+              ))
+            ) : (
+              <h3>Empty</h3>
+            )}
           </div>
         )}
       </div>

@@ -14,7 +14,7 @@ class MainLayout extends React.Component {
   }
 
   checkAuth = () => {
-    const posUser = localStorage.getItem("posUser");
+    const posUser = sessionStorage.getItem("posUser");
     if (!posUser || posUser.length < 1) {
       window.location.replace("/login");
     }
@@ -28,7 +28,7 @@ class MainLayout extends React.Component {
 
   render() {
     const { collapsed } = this.state;
-    const posUser = localStorage.getItem("posUser");
+    const posUser = sessionStorage.getItem("posUser");
     return (
       <div>
         {posUser && (
@@ -37,12 +37,16 @@ class MainLayout extends React.Component {
               <div className="logo" />
               <Menu theme="light" mode="inline" defaultSelectedKeys={["1"]}>
                 <Menu.Item key="1">
-                  <Icon type="user" />
-                  <span>nav 1</span>
+                  <Link to="/">
+                    <Icon type="appstore" />
+                    <span>Table Map</span>
+                  </Link>
                 </Menu.Item>
                 <Menu.Item key="2">
-                  <Icon type="video-camera" />
-                  <span>nav 2</span>
+                  <Link to="/test">
+                    <Icon type="code" />
+                    <span>Test</span>
+                  </Link>
                 </Menu.Item>
                 <Menu.Item key="3">
                   <Icon type="upload" />

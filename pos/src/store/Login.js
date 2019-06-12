@@ -6,16 +6,21 @@ const initialState = { isLoading: false, defRVCList: "" };
 
 export const actionCreators = {
   requestDefRVCList: () => async dispatch => {
-    dispatch({ type: requestDefRVCListType });
-    const res = await dataServices.get("api/DefRVCList/GetDefRVCLists");
-    if (res.status === 200) {
-      dispatch({ type: receiveDefRVCListType, defRVCList: res.data });
+    try {
+      dispatch({ type: requestDefRVCListType });
+      const res = await dataServices.get("api/Login/GetDefRVCLists");
+      console.log(res);
+      if (res.status === 200) {
+        dispatch({ type: receiveDefRVCListType, defRVCList: res.data });
+      }
+    } catch (e) {
+      console.log(e);
     }
   },
   login: data => async () => {
     // console.log(data);
     const res = await dataServices.get(
-      `api/LoginPOS/GetUserName?RVCNo=${data.rvcNo}&Password=${data.password}`
+      `api/Login/GetUserName?RVCNo=${data.rvcNo}&Password=${data.password}`
     );
     if (res.status === 200) {
       return res.data[0];

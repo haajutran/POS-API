@@ -2,7 +2,18 @@ import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actionCreators } from "../store/Login";
-import { Form, Icon, Input, Button, Select, Row, Col, message } from "antd";
+import {
+  Form,
+  Icon,
+  Input,
+  Button,
+  Select,
+  Row,
+  Col,
+  message,
+  Radio
+} from "antd";
+import logo from "../assets/images/logo.png";
 
 const { Option } = Select;
 
@@ -19,7 +30,7 @@ class Login extends Component {
         this.props.login(values).then(res => {
           if (res.resuilt === 1) {
             message.success("Login Success!");
-            localStorage.setItem("posUser", res.posUser);
+            sessionStorage.setItem("posUser", res.posUser);
             window.location.replace("/");
           } else {
             message.error("RVC No or Password is not correct!");
@@ -44,25 +55,40 @@ class Login extends Component {
           <h3>Loading</h3>
         ) : (
           <Row type="flex" justify="center">
-            <Col lg={6} md={12} sm={16} xs={22} className="login-card">
+            <Col lg={10} md={12} sm={16} xs={22} className="login-card">
               <div className="login-form">
-                <h2>LOGIN</h2>
+                <div>
+                  <img style={{ height: "100px" }} alt="logo" src={logo} />
+                </div>
                 <Form onSubmit={this.handleSubmit} className="login-form">
                   <Form.Item>
                     {getFieldDecorator("rvcNo", {
                       rules: [
                         {
                           required: true,
-                          message: "Please input your RVC No!"
+                          message: "Please choose RVC!"
                         }
                       ]
                     })(
-                      <Select placeholder="RVC No">
+                      <Radio.Group size="large">
                         {defRVCList &&
                           defRVCList.map(item => (
-                            <Option value={item.rvcno}>{item.rvcno}</Option>
+                            <Radio.Button value={item.rvcno}>
+                              {item.rvcname}
+                            </Radio.Button>
                           ))}
-                      </Select>
+                        <Radio.Button value={1}>TEST</Radio.Button>
+                        <Radio.Button value={1}>TEST</Radio.Button>
+                        <Radio.Button value={1}>TEST</Radio.Button>
+                        <Radio.Button value={1}>TEST</Radio.Button>
+                        <Radio.Button value={1}>TEST</Radio.Button>
+                        <Radio.Button value={1}>TEST</Radio.Button>
+                        <Radio.Button value={1}>TEST</Radio.Button>
+                        <Radio.Button value={1}>TEST</Radio.Button>
+                        <Radio.Button value={1}>TEST</Radio.Button>
+                        <Radio.Button value={1}>TEST</Radio.Button>
+                        <Radio.Button value={1}>TEST</Radio.Button>
+                      </Radio.Group>
                     )}
                   </Form.Item>
                   <Form.Item>

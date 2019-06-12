@@ -31,7 +31,7 @@ function App() {
   ) : (
     <Layout>
       <Switch>
-        <Route exact path="/" component={Home} />
+        <Route exact path="/" component={TableMap} />
         <Route path="/tablemap" component={TableMap} />
         <Route path="/about" component={About} />
       </Switch>

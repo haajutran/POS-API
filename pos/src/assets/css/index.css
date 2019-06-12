@@ -27,8 +27,17 @@
   font-size: 18px;
   margin-left: 20px;
 }
-
-.square {
+.centered {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.table-info span {
+  margin: 0 5px;
+}
+/* .square {
   border: 1px solid black;
   height: 90px;
   width: 90px;
@@ -40,5 +49,4 @@
 
 .square.pick {
   background: #33ec7a;
-  /* color: #fff; */
-}
+} */
