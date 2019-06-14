@@ -15,14 +15,18 @@ class TableMap extends Component {
     this.props.requestTableAreas();
   }
 
-  getImage(item) {
+  getImageNull(item) {
     const { tableTypes } = this.props;
     return tableTypes.find(i => i.tableType1 === item.tableType).imageNull;
+  }
+  getImagePickup(item) {
+    const { tableTypes } = this.props;
+    return tableTypes.find(i => i.tableType1 === item.tableType).imagePickup;
   }
 
   render() {
     const { tableAreas, tableTypes, isLoading } = this.props;
-    console.log(tableTypes);
+
     return (
       <div>
         <h2>Table Map</h2>
@@ -53,9 +57,7 @@ class TableMap extends Component {
                               style={{ width: "100%" }}
                               src={
                                 "data:image/png;base64, " +
-                                tableTypes.find(
-                                  i => i.tableType1 === item.tableType
-                                ).imagePickup
+                                this.getImagePickup(item)
                               }
                               alt="img"
                             />
@@ -70,6 +72,15 @@ class TableMap extends Component {
                               </p>
                               <p>{item.amount}</p>
                               <p>{item.openTime}</p>
+                              <p
+                                className={`status ${
+                                  item.lastChgTime <= 45
+                                    ? "success"
+                                    : item.lastChgTime <= 80
+                                    ? "warning"
+                                    : "danger"
+                                }`}
+                              />
                             </div>
                           </div>
                         ) : (
@@ -77,7 +88,8 @@ class TableMap extends Component {
                             <img
                               style={{ width: "100%" }}
                               src={
-                                "data:image/png;base64, " + this.getImage(item)
+                                "data:image/png;base64, " +
+                                this.getImageNull(item)
                                 // tableTypes.find(
                                 //   i => i.tableType1 === item.tableType
                                 // ).imageNull

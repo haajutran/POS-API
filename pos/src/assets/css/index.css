@@ -37,6 +37,24 @@
 .table-info span {
   margin: 0 5px;
 }
+.centered .status {
+  text-align: center;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  position: absolute;
+  top: 90px;
+  left: -20px;
+}
+.centered .status.danger {
+  background: #ff6161;
+}
+.centered .status.warning {
+  background: #ffde4d;
+}
+.centered .status.success {
+  background: #61ff7b;
+}
 /* .square {
   border: 1px solid black;
   height: 90px;
