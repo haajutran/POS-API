@@ -34,6 +34,9 @@
   transform: translate(-50%, -50%);
   text-align: center;
 }
+.centered p {
+  margin-bottom: 5px;
+}
 .table-info span {
   margin: 0 5px;
 }
@@ -43,8 +46,8 @@
   width: 20px;
   border-radius: 50%;
   position: absolute;
-  top: 90px;
-  left: -20px;
+  top: 70px;
+  left: 0px;
 }
 .centered .status.danger {
   background: #ff6161;
@@ -68,3 +71,29 @@
 .square.pick {
   background: #33ec7a;
 } */
+
+/* Dashboard */
+.dashboard .ant-card {
+  border-radius: 10px;
+  margin-bottom: 1em;
+}
+.dashboard .short {
+  color: #fff;
+}
+.statistic {
+  margin-top: 2em;
+  padding: 1em 2em;
+  border-color: #e8e8e8;
+  border-radius: 10px;
+}
+.statistic .title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.loading-area {
+  width: 100%;
+  padding: 2em;
+  font-size: 20px;
+  text-align: center;
+}

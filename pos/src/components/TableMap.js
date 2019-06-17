@@ -2,7 +2,14 @@ import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actionCreators } from "../store/TableMap";
-import { List } from "antd";
+import { List, Row, Col, Card, Statistic, Modal, Button } from "antd";
+
+function warning() {
+  Modal.warning({
+    title: "Thông báo!",
+    content: "Ngày hiện tại và ngày trên hệ thống không trùng khớp!"
+  });
+}
 
 class TableMap extends Component {
   constructor(props) {
@@ -13,7 +20,20 @@ class TableMap extends Component {
   componentDidMount() {
     this.props.requestTableTypes();
     this.props.requestTableAreas();
+    this.props.requestRVCQuickInfomation();
+    this.checkPOSInfo();
   }
+
+  checkPOSInfo = async () => {
+    const POSInfo = await this.props.requestPOSInfo();
+    if (POSInfo.length > 0) {
+      const posDate = new Date(POSInfo[0].posDate);
+      const today = new Date();
+      if (posDate !== today) {
+        warning();
+      }
+    }
+  };
 
   getImageNull(item) {
     const { tableTypes } = this.props;
@@ -25,7 +45,13 @@ class TableMap extends Component {
   }
 
   render() {
-    const { tableAreas, tableTypes, isLoading } = this.props;
+    const {
+      tableAreas,
+      tableTypes,
+      isLoading,
+      RVCQuickInfomation
+    } = this.props;
+    // console.log(POSInfo);
 
     return (
       <div>
@@ -34,6 +60,30 @@ class TableMap extends Component {
           <h3>Loading...</h3>
         ) : (
           <div>
+            {RVCQuickInfomation.length > 0 && (
+              <div className="dashboard">
+                <div>
+                  <Row gutter={16}>
+                    {RVCQuickInfomation.map(item => (
+                      <Col lg={6} xl={4}>
+                        <Card
+                          style={{
+                            background:
+                              "linear-gradient(to right, #00b4db, #0083b0)"
+                          }}
+                        >
+                          <Statistic
+                            title={item.title}
+                            className="short"
+                            value={item.dataReturn}
+                          />
+                        </Card>
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              </div>
+            )}
             {tableTypes && tableAreas.length > 0 ? (
               tableAreas.map(ta => (
                 <div>

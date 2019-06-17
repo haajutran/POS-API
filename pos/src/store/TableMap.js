@@ -6,7 +6,15 @@ const receiveTableTypesType = "RECEIVE_TABLE_TYPES";
 const requestTableAreasType = "REQUEST_TABLE_AREAS";
 const receiveTableAreasType = "RECEIVE_TABLE_AREAS";
 
-const initialState = { isLoading: false, tableTypes: [], tableAreas: [] };
+const requestRVCQuickInfomationType = "REQUEST_RVCQIT";
+const receiveRVCQuickInfomationType = "RECEIVE_RVCQIT";
+
+const initialState = {
+  isLoading: false,
+  tableTypes: [],
+  tableAreas: [],
+  RVCQuickInfomation: {}
+};
 
 export const actionCreators = {
   requestTableTypes: () => async dispatch => {
@@ -46,6 +54,35 @@ export const actionCreators = {
       console.log(e);
       dispatch({ type: receiveTableAreasType, tableAreas: [] });
     }
+  },
+  requestRVCQuickInfomation: () => async dispatch => {
+    try {
+      dispatch({ type: requestRVCQuickInfomationType });
+      const res = await dataServices.get(
+        "api/GetTableMap/GetRVCQuickInfomation?RVCNo=33&POSDay=04&POSMonth=06&POSYear=2019"
+      );
+      if (res.status === 200) {
+        dispatch({
+          type: receiveRVCQuickInfomationType,
+          RVCQuickInfomation: res.data
+        });
+      }
+    } catch (e) {
+      console.log(e);
+      dispatch({ type: receiveRVCQuickInfomationType, RVCQuickInfomation: {} });
+    }
+  },
+  requestPOSInfo: () => async () => {
+    try {
+      const res = await dataServices.get(
+        "api/GetTableMap/GetPOSInfo?RVCCode=33&POSUser=no"
+      );
+      if (res.status === 200) {
+        return res.data;
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 };
 
@@ -78,6 +115,21 @@ export const reducer = (state, action) => {
     return {
       ...state,
       tableTypes: action.tableTypes,
+      isLoading: false
+    };
+  }
+
+  if (action.type === requestRVCQuickInfomationType) {
+    return {
+      ...state,
+      isLoading: true
+    };
+  }
+
+  if (action.type === receiveRVCQuickInfomationType) {
+    return {
+      ...state,
+      RVCQuickInfomation: action.RVCQuickInfomation,
       isLoading: false
     };
   }
