@@ -51,8 +51,8 @@ class TableMap extends Component {
       isLoading,
       RVCQuickInfomation
     } = this.props;
-    // console.log(POSInfo);
-
+    console.log(tableAreas);
+    var displayed = [];
     return (
       <div>
         <h2>Table Map</h2>
@@ -102,37 +102,41 @@ class TableMap extends Component {
                     renderItem={(item, index) => (
                       <List.Item>
                         {item.checkNo !== "0" ? (
-                          <div>
-                            <img
-                              style={{ width: "100%" }}
-                              src={
-                                "data:image/png;base64, " +
-                                this.getImagePickup(item)
-                              }
-                              alt="img"
-                            />
-
-                            <div className="centered">
-                              <p className="table-info">
-                                <span>{item.tableCode}</span>|
-                                <span>
-                                  {item.tGuest}/{item.tChild}
-                                </span>
-                                |<span>({item.tSubtable})</span>
-                              </p>
-                              <p>{item.amount}</p>
-                              <p>{item.openTime}</p>
-                              <p
-                                className={`status ${
-                                  item.lastChgTime <= 45
-                                    ? "success"
-                                    : item.lastChgTime <= 80
-                                    ? "warning"
-                                    : "danger"
-                                }`}
+                          !displayed.includes(item.tableCode) &&
+                          (displayed.push(item.tableCode),
+                          (
+                            <div>
+                              <img
+                                style={{ width: "100%" }}
+                                src={
+                                  "data:image/png;base64, " +
+                                  this.getImagePickup(item)
+                                }
+                                alt="img"
                               />
+
+                              <div className="centered">
+                                <p className="table-info">
+                                  <span>{item.tableCode}</span>|
+                                  <span>
+                                    {item.tGuest}/{item.tChild}
+                                  </span>
+                                  |<span>({item.tSubtable})</span>
+                                </p>
+                                <p>{item.amount}</p>
+                                <p>{item.openTime}</p>
+                                <p
+                                  className={`status ${
+                                    item.lastChgTime <= 45
+                                      ? "success"
+                                      : item.lastChgTime <= 80
+                                      ? "warning"
+                                      : "danger"
+                                  }`}
+                                />
+                              </div>
                             </div>
-                          </div>
+                          ))
                         ) : (
                           <div>
                             <img
