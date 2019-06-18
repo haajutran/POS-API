@@ -11,17 +11,42 @@ import {
   Row,
   Col,
   message,
-  Radio
+  Radio,
+  notification,
+  Menu,
+  Dropdown
 } from "antd";
 import logo from "../assets/images/logo.png";
 
 const { Option } = Select;
+
+// const
 
 class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
+
+  menu = () => {
+    const { notis } = this.props;
+    return (
+      <Menu>
+        {notis &&
+          notis.map(item => <Menu.Item key={item.id}>{item.title}</Menu.Item>)}
+      </Menu>
+    );
+  };
+
+  openNotification = (message, description) => {
+    const args = {
+      message,
+      description,
+      duration: 0,
+      placement: "topLeft"
+    };
+    notification.open(args);
+  };
 
   handleSubmit = e => {
     e.preventDefault();
@@ -43,7 +68,20 @@ class Login extends Component {
 
   componentDidMount() {
     this.props.requestDefRVCList();
+    this.checkNotis();
   }
+
+  checkNotis = async () => {
+    const totalNotis = await this.props.getTotalNotis();
+    if (totalNotis.totalMessage === 1) {
+      const noti = await this.props.getNoti(totalNotis.idAlert);
+      console.log(noti);
+      const message = noti.title;
+      const description = noti.information;
+      this.openNotification(message, description);
+    }
+    this.props.requestNotis();
+  };
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -55,6 +93,16 @@ class Login extends Component {
           <h3>Loading</h3>
         ) : (
           <Row type="flex" justify="center">
+            <Dropdown trigger={["click"]} overlay={() => this.menu()}>
+              <Button
+                className="noti-btn"
+                size="large"
+                shape="circle-outline"
+                type="danger"
+                icon="bell"
+              />
+            </Dropdown>
+
             <Col lg={10} md={12} sm={16} xs={22} className="login-card">
               <div className="login-form">
                 <div>
@@ -77,17 +125,6 @@ class Login extends Component {
                               {item.rvcname}
                             </Radio.Button>
                           ))}
-                        <Radio.Button value={1}>TEST</Radio.Button>
-                        <Radio.Button value={1}>TEST</Radio.Button>
-                        <Radio.Button value={1}>TEST</Radio.Button>
-                        <Radio.Button value={1}>TEST</Radio.Button>
-                        <Radio.Button value={1}>TEST</Radio.Button>
-                        <Radio.Button value={1}>TEST</Radio.Button>
-                        <Radio.Button value={1}>TEST</Radio.Button>
-                        <Radio.Button value={1}>TEST</Radio.Button>
-                        <Radio.Button value={1}>TEST</Radio.Button>
-                        <Radio.Button value={1}>TEST</Radio.Button>
-                        <Radio.Button value={1}>TEST</Radio.Button>
                       </Radio.Group>
                     )}
                   </Form.Item>

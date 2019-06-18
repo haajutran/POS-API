@@ -97,3 +97,9 @@
   font-size: 20px;
   text-align: center;
 }
+
+.noti-btn {
+  position: absolute;
+  top: 2em;
+  right: 3em;
+}
