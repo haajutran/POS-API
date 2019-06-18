@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/POS-API/static/css/main.ccf26d57.chunk.css",
-    "main.js": "/POS-API/static/js/main.e7019136.chunk.js",
-    "main.js.map": "/POS-API/static/js/main.e7019136.chunk.js.map",
+    "main.js": "/POS-API/static/js/main.9bf18970.chunk.js",
+    "main.js.map": "/POS-API/static/js/main.9bf18970.chunk.js.map",
     "runtime~main.js": "/POS-API/static/js/runtime~main.de16c067.js",
     "runtime~main.js.map": "/POS-API/static/js/runtime~main.de16c067.js.map",
     "static/css/2.2f412a32.chunk.css": "/POS-API/static/css/2.2f412a32.chunk.css",
     "static/js/2.aefb18d4.chunk.js": "/POS-API/static/js/2.aefb18d4.chunk.js",
     "static/js/2.aefb18d4.chunk.js.map": "/POS-API/static/js/2.aefb18d4.chunk.js.map",
     "index.html": "/POS-API/index.html",
-    "precache-manifest.51adec44714bbc797a1881a9de1ac122.js": "/POS-API/precache-manifest.51adec44714bbc797a1881a9de1ac122.js",
+    "precache-manifest.05a32184656b69e973b2868861fea3a9.js": "/POS-API/precache-manifest.05a32184656b69e973b2868861fea3a9.js",
     "service-worker.js": "/POS-API/service-worker.js",
     "static/css/2.2f412a32.chunk.css.map": "/POS-API/static/css/2.2f412a32.chunk.css.map",
     "static/css/main.ccf26d57.chunk.css.map": "/POS-API/static/css/main.ccf26d57.chunk.css.map",

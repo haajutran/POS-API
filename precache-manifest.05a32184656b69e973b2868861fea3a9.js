@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "121e9a7723558bf1da7bce0859e54527",
+    "revision": "efa73470cddfcb527d404eb605ad9fca",
     "url": "/POS-API/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/POS-API/static/css/2.2f412a32.chunk.css"
   },
   {
-    "revision": "3ae4ae8dce437f1e00c1",
+    "revision": "19979e69321888e0dda5",
     "url": "/POS-API/static/css/main.ccf26d57.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/POS-API/static/js/2.aefb18d4.chunk.js"
   },
   {
-    "revision": "3ae4ae8dce437f1e00c1",
-    "url": "/POS-API/static/js/main.e7019136.chunk.js"
+    "revision": "19979e69321888e0dda5",
+    "url": "/POS-API/static/js/main.9bf18970.chunk.js"
   },
   {
     "revision": "2039f5ef6c429ada79dd",
