@@ -14,7 +14,8 @@ import {
   Radio,
   notification,
   Menu,
-  Dropdown
+  Dropdown,
+  Modal
 } from "antd";
 import logo from "../assets/images/logo.png";
 
@@ -33,9 +34,25 @@ class Login extends Component {
     return (
       <Menu>
         {notis &&
-          notis.map(item => <Menu.Item key={item.id}>{item.title}</Menu.Item>)}
+          notis.map(item => (
+            <Menu.Item key={item.id} onClick={() => this.info(item)}>
+              {item.title}
+            </Menu.Item>
+          ))}
       </Menu>
     );
+  };
+
+  info = item => {
+    Modal.info({
+      title: item.title,
+      content: (
+        <div>
+          <p>{item.information}</p>
+        </div>
+      ),
+      onOk() {}
+    });
   };
 
   openNotification = (message, description) => {

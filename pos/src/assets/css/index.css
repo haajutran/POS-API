@@ -35,7 +35,7 @@
   text-align: center;
 }
 .centered p {
-  margin-bottom: 5px;
+  margin-bottom: 2px;
 }
 .table-info span {
   margin: 0 5px;
@@ -46,8 +46,8 @@
   width: 20px;
   border-radius: 50%;
   position: absolute;
-  top: 70px;
-  left: 0px;
+  top: 85px;
+  left: -20px;
 }
 .centered .status.danger {
   background: #ff6161;
@@ -57,6 +57,14 @@
 }
 .centered .status.success {
   background: #61ff7b;
+}
+
+.centered .holding {
+  position: absolute;
+  top: 85px;
+  font-size: 20px;
+  right: -20px;
+  color: #fa1f56;
 }
 /* .square {
   border: 1px solid black;
@@ -102,4 +110,80 @@
   position: absolute;
   top: 2em;
   right: 3em;
+}
+
+.table-map-grid .ant-row > .ant-col {
+  width: 230px;
+  height: 230px;
+}
+
+.noti-cashier {
+  font-size: 20px;
+  float: right;
+  top: 20px;
+  right: 40px;
+  position: absolute;
+}
+
+.info-zone {
+  padding: 1em 0;
+  background: #355c7d; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #c06c84,
+    #6c5b7b,
+    #355c7d
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #c06c84,
+    #6c5b7b,
+    #355c7d
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: #fff;
+}
+
+.info-zone .border-right {
+  border-right: solid 1px #858688;
+}
+
+.info-zone .info-btn {
+  padding: 4px 5px;
+  border-radius: 50%;
+  background: rgb(107, 189, 214);
+}
+
+.ifz-1 {
+  text-align: center;
+}
+.ifz-1 .line {
+  margin-bottom: 10px;
+}
+.ifz-2 {
+  margin: 0 10px;
+  padding: 8px 0;
+  border-top: solid 1px #858688;
+}
+
+.ifz-2 .anticon {
+  margin-right: 1em;
+}
+
+.ifz-2 .ant-btn {
+  margin-right: 8px;
+}
+.if-t {
+  background: #fff;
+}
+.if-t .ant-table-pagination.ant-pagination {
+  margin-right: 1em;
+}
+
+.ifz-3 {
+  margin-top: 1em;
+  text-align: center;
+}
+
+.ifz-3 .ant-btn {
+  margin-right: 8px;
 }

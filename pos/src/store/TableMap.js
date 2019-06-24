@@ -83,6 +83,18 @@ export const actionCreators = {
     } catch (e) {
       console.log(e);
     }
+  },
+  checkTableHold: checkNo => async () => {
+    try {
+      const res = await dataServices.get(
+        `api/GetTableMap/CheckTableHold?CheckNo=${checkNo}`
+      );
+      if (res.status === 200) {
+        return res.data[0];
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 };
 

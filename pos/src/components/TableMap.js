@@ -2,23 +2,23 @@ import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actionCreators } from "../store/TableMap";
-import { List, Row, Col, Card, Statistic, Modal, Button } from "antd";
+import { List, Row, Col, Card, Statistic, Modal, Button, Icon } from "antd";
 
 function warning() {
   Modal.warning({
-    title: "Thông báo!",
-    content: "Ngày hiện tại và ngày trên hệ thống không trùng khớp!"
+    title: "Alert!",
+    content: "The current date and the date on the system do not match!"
   });
 }
-
+var isHolding = 0;
 class TableMap extends Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
 
-  componentDidMount() {
-    this.props.requestTableTypes();
+  async componentDidMount() {
+    await this.props.requestTableTypes();
     this.props.requestTableAreas();
     this.props.requestRVCQuickInfomation();
     this.checkPOSInfo();
@@ -39,9 +39,55 @@ class TableMap extends Component {
     const { tableTypes } = this.props;
     return tableTypes.find(i => i.tableType1 === item.tableType).imageNull;
   }
-  getImagePickup(item) {
+  getImagePickup(tableType) {
     const { tableTypes } = this.props;
-    return tableTypes.find(i => i.tableType1 === item.tableType).imagePickup;
+    return tableTypes.find(i => i.tableType1 === tableType).imagePickup;
+  }
+  async checkTableHold(checkNo) {
+    const res = await this.props.checkTableHold(checkNo);
+    return res;
+  }
+
+  renderTablePickup(item) {
+    // const aaa = this.checkTableHold(item.checkNo)
+
+    return (
+      <div>
+        <img
+          style={{ width: "100%" }}
+          src={"data:image/png;base64, " + this.getImagePickup(item.tableType)}
+          alt="img"
+        />
+
+        <div className="centered">
+          <p>
+            {item.tableCode}
+            {item.tableJoin}
+          </p>
+          <p className="table-info">
+            <span>
+              {item.tGuest}/{item.tChild}
+            </span>
+            |<span>({item.tSubtable})</span>
+          </p>
+          <p>{item.amount}</p>
+          <p>{item.openTime}</p>
+          <p
+            className={`status ${
+              item.lastChgTime <= 45
+                ? "success"
+                : item.lastChgTime <= 80
+                ? "warning"
+                : "danger"
+            }`}
+          />
+
+          {item.tableHold > 0 && (
+            <Icon type="pause-circle" className={`holding`} />
+          )}
+        </div>
+      </div>
+    );
   }
 
   render() {
@@ -86,7 +132,7 @@ class TableMap extends Component {
             )}
             {tableTypes && tableAreas.length > 0 ? (
               tableAreas.map(ta => (
-                <div>
+                <div className="table-map-grid">
                   <h3>{ta.tableAreaName}</h3>
                   <List
                     grid={{
@@ -104,39 +150,7 @@ class TableMap extends Component {
                         {item.checkNo !== "0" ? (
                           !displayed.includes(item.tableCode) &&
                           (displayed.push(item.tableCode),
-                          (
-                            <div>
-                              <img
-                                style={{ width: "100%" }}
-                                src={
-                                  "data:image/png;base64, " +
-                                  this.getImagePickup(item)
-                                }
-                                alt="img"
-                              />
-
-                              <div className="centered">
-                                <p className="table-info">
-                                  <span>{item.tableCode}</span>|
-                                  <span>
-                                    {item.tGuest}/{item.tChild}
-                                  </span>
-                                  |<span>({item.tSubtable})</span>
-                                </p>
-                                <p>{item.amount}</p>
-                                <p>{item.openTime}</p>
-                                <p
-                                  className={`status ${
-                                    item.lastChgTime <= 45
-                                      ? "success"
-                                      : item.lastChgTime <= 80
-                                      ? "warning"
-                                      : "danger"
-                                  }`}
-                                />
-                              </div>
-                            </div>
-                          ))
+                          <div>{this.renderTablePickup(item)}</div>)
                         ) : (
                           <div>
                             <img

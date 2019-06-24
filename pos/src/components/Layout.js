@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Layout, Menu, Icon, Avatar } from "antd";
+import { Layout, Menu, Icon, Avatar, Badge } from "antd";
+import NotiCashier from "./NotiCashier";
 const { SubMenu } = Menu;
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -61,6 +62,7 @@ class MainLayout extends React.Component {
                   type={collapsed ? "menu-unfold" : "menu-fold"}
                   onClick={this.toggle}
                 />
+                <NotiCashier />
               </Header>
               <Content
                 style={{
