@@ -5,11 +5,13 @@ import { routerReducer, routerMiddleware } from "react-router-redux";
 import * as Login from "./Login";
 import * as TableMap from "./TableMap";
 import * as NotiCashier from "./NotiCashier";
+import * as DetailEmpty from "./DetailEmpty";
 
 export default function configureStore(history, initialState) {
   const reducers = {
     login: Login.reducer,
     tableMap: TableMap.reducer,
+    detailEmpty: DetailEmpty.reducer,
     notiCashier: NotiCashier.reducer
   };
 

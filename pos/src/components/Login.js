@@ -71,8 +71,11 @@ class Login extends Component {
       if (!err) {
         this.props.login(values).then(res => {
           if (res.resuilt === 1) {
+            console.log(res);
             message.success("Login Success!");
             sessionStorage.setItem("posUser", res.posUser);
+            sessionStorage.setItem("rvcNo", values.rvcNo);
+            this.props.setPOSInfo(res.posUser, values.rvcNo);
             window.location.replace("/");
           } else {
             message.error("RVC No or Password is not correct!");

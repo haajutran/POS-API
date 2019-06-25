@@ -63,6 +63,15 @@ export const actionCreators = {
     if (res.status === 200) {
       return res.data[0];
     }
+  },
+  setPOSInfo: (user, rvcNo) => async () => {
+    const res = await dataServices.get(
+      `api/GetTableMap/GetPOSInfo?RVCCode=${rvcNo}&POSUser=${user}`
+    );
+    console.log(res);
+    if (res.status === 200) {
+      sessionStorage.setItem("posDate", res.data[0].posDate);
+    }
   }
 };
 

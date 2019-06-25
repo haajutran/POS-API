@@ -187,3 +187,50 @@
 .ifz-3 .ant-btn {
   margin-right: 8px;
 }
+
+.actions-header .ant-btn {
+  padding-left: 1em !important;
+  padding-right: 1em !important;
+}
+
+.actions-header .check-btn {
+  border-color: #6ff16a;
+  color: #fff;
+  background: #6ff16a;
+}
+.actions-header .cancel-btn {
+  border-color: #f76363;
+  color: #fff;
+  background: #f76363;
+}
+
+.de-menus {
+  margin: 1em 0;
+  background: #2b2b2b57;
+  padding: 1em;
+  border-radius: 5px;
+  -webkit-box-shadow: 2px 2px 8px 0px rgba(56, 56, 56, 1);
+  -moz-box-shadow: 2px 2px 8px 0px rgba(56, 56, 56, 1);
+  box-shadow: 2px 2px 8px 0px rgba(56, 56, 56, 1);
+}
+
+.de-menus .ant-btn {
+  margin-right: 1em;
+  width: 100px;
+}
+.de-info {
+  margin-top: 1em;
+}
+.de-info .header {
+  background: #2b2b2b57;
+  padding: 1em;
+  border-radius: 5px;
+  margin-bottom: 1em;
+}
+.de-info .header .icon {
+  margin-right: 5px;
+}
+
+.de-info .left .ant-form-item-label {
+  text-align: left;
+}
