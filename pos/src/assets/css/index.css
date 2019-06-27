@@ -234,3 +234,20 @@
 .de-info .left .ant-form-item-label {
   text-align: left;
 }
+
+.sts-s {
+  padding: 10px;
+}
+
+.sts-t {
+  width: 150px;
+}
+
+.client-modal {
+  width: 60% !important;
+  min-width: 520px;
+}
+.join-modal {
+  top: 10px;
+  width: 98% !important;
+}

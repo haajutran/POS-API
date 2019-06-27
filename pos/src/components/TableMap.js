@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+
+import { Link } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actionCreators } from "../store/TableMap";
@@ -152,7 +154,7 @@ class TableMap extends Component {
                           (displayed.push(item.tableCode),
                           <div>{this.renderTablePickup(item)}</div>)
                         ) : (
-                          <div>
+                          <Link to={`/detailempty/${item.tableCode}`}>
                             <img
                               style={{ width: "100%" }}
                               src={
@@ -170,7 +172,7 @@ class TableMap extends Component {
                                 <span>{item.tableCode}</span>
                               </p>
                             </div>
-                          </div>
+                          </Link>
                         )}
                       </List.Item>
                     )}
