@@ -74,11 +74,13 @@ export const actionCreators = {
   },
   requestPOSInfo: () => async () => {
     try {
+      const rvcNo = sessionStorage.getItem("rvcNo");
+      const posUser = sessionStorage.getItem("posUser");
       const res = await dataServices.get(
-        "api/GetTableMap/GetPOSInfo?RVCCode=33&POSUser=no"
+        `api/GetTableMap/GetPOSInfo?RVCCode=${rvcNo}&POSUser=${posUser}`
       );
       if (res.status === 200) {
-        return res.data;
+        sessionStorage.setItem("posDate", res.data[0].posDate);
       }
     } catch (e) {
       console.log(e);

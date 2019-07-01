@@ -33,12 +33,17 @@
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+  font-size: 13px;
 }
 .centered p {
-  margin-bottom: 2px;
+  margin-bottom: 0;
 }
 .table-info span {
   margin: 0 5px;
+}
+.centered .table-code {
+  font-size: 15px;
+  font-weight: bold;
 }
 .centered .status {
   text-align: center;
@@ -46,8 +51,12 @@
   width: 20px;
   border-radius: 50%;
   position: absolute;
-  top: 85px;
-  left: -20px;
+  top: 75px;
+  left: -25px;
+}
+.centered .reserved-table {
+  font-weight: bold;
+  color: #ff6161;
 }
 .centered .status.danger {
   background: #ff6161;
@@ -61,9 +70,9 @@
 
 .centered .holding {
   position: absolute;
-  top: 85px;
+  top: 75px;
   font-size: 20px;
-  right: -20px;
+  right: -25px;
   color: #fa1f56;
 }
 /* .square {
@@ -250,4 +259,28 @@
 .join-modal {
   top: 10px;
   width: 98% !important;
+}
+.posDate {
+  margin-left: 2em;
+  color: #1890ff;
+}
+.today {
+  margin-left: 2em;
+  color: #f064dd;
+}
+.s-t {
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+.table-join {
+  border: 3px solid #18ff5d;
+  padding: 5px;
+}
+
+.closed-area {
+  max-height: 0;
+  overflow: hidden;
+  /* transition: .5s ea; */
+  transition: max-height 1s ease;
 }

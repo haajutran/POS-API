@@ -14,6 +14,7 @@ import {
   Select,
   Modal
 } from "antd";
+import TableJoin from "./TableJoin";
 
 const { TextArea, Search } = Input;
 
@@ -21,6 +22,7 @@ class DetailEmpty extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      tableCode: "",
       mealPeriod: [],
       activeTime: "",
       userDefineDef: [],
@@ -33,7 +35,7 @@ class DetailEmpty extends Component {
   }
 
   async componentWillMount() {
-    console.log(this.props.match.params.tableCode);
+    const tableCode = this.props.match.params.tableCode;
     const mealPeriod = await this.props.getMealPeriod();
     const userDefineDef = await this.props.getUserDefineDef();
     const statistic = await this.props.getStatistic(userDefineDef.length);
@@ -44,7 +46,8 @@ class DetailEmpty extends Component {
     this.setState({
       mealPeriod,
       userDefineDef,
-      statistic
+      statistic,
+      tableCode
     });
   }
 
@@ -109,7 +112,6 @@ class DetailEmpty extends Component {
   };
 
   showJoinModal = () => {
-    this.props.requestTables();
     this.setState({
       joinModalVisible: true
     });
@@ -127,6 +129,10 @@ class DetailEmpty extends Component {
     this.setState({
       joinModalVisible: false
     });
+  };
+
+  aaa = ttt => {
+    alert(ttt);
   };
 
   render() {
@@ -155,6 +161,7 @@ class DetailEmpty extends Component {
       }
     };
     const {
+      tableCode,
       mealPeriod,
       activeTime,
       userDefineDef,
@@ -245,24 +252,24 @@ class DetailEmpty extends Component {
                 <div className="body">
                   <Form {...formItemLayout} onSubmit={this.handleSubmit}>
                     <Form.Item label="Table">
-                      {getFieldDecorator("email", {
-                        initialValue: "T1"
-                      })(<Input />)}
+                      {getFieldDecorator("table", {
+                        initialValue: tableCode
+                      })(<Input readOnly />)}
                     </Form.Item>
                     <Form.Item label="Room">
-                      {getFieldDecorator("email", {
+                      {getFieldDecorator("room", {
                         initialValue: ""
-                      })(<Input />)}
+                      })(<Input readOnly />)}
                     </Form.Item>
                     <Form.Item label="Adult">
-                      {getFieldDecorator("email", {
-                        initialValue: "1"
-                      })(<Input />)}
+                      {getFieldDecorator("adult", {
+                        initialValue: ""
+                      })(<Input readOnly />)}
                     </Form.Item>
                     <Form.Item label="Child">
-                      {getFieldDecorator("email", {
-                        initialValue: "0"
-                      })(<Input />)}
+                      {getFieldDecorator("child", {
+                        initialValue: ""
+                      })(<Input readOnly />)}
                     </Form.Item>
                     <Form.Item label="Notes">
                       {getFieldDecorator("email", {
@@ -363,7 +370,7 @@ class DetailEmpty extends Component {
           onOk={this.handleOkJoin}
           onCancel={this.handleCancelJoin}
         >
-          asd
+          <TableJoin aaa={this.aaa} />
         </Modal>
       </div>
     );

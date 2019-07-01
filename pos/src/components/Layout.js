@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Layout, Menu, Icon, Avatar, Badge } from "antd";
 import NotiCashier from "./NotiCashier";
+import moment from "moment";
 const { SubMenu } = Menu;
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -10,8 +11,35 @@ class MainLayout extends React.Component {
     super(props);
     this.checkAuth();
     this.state = {
-      collapsed: true
+      collapsed: true,
+      time: new Date().toLocaleString()
     };
+  }
+  componentDidMount() {
+    this.intervalID = setInterval(() => this.tick(), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalID);
+  }
+
+  async tick() {
+    let current_datetime = new Date();
+    let formatted_date =
+      current_datetime.getDate() +
+      "/" +
+      (current_datetime.getMonth() + 1) +
+      "/" +
+      current_datetime.getFullYear() +
+      " - " +
+      current_datetime.getHours() +
+      ":" +
+      current_datetime.getMinutes() +
+      ":" +
+      current_datetime.getSeconds();
+    await this.setState({
+      time: formatted_date
+    });
   }
 
   checkAuth = () => {
@@ -28,7 +56,7 @@ class MainLayout extends React.Component {
   };
 
   render() {
-    const { collapsed } = this.state;
+    const { collapsed, time } = this.state;
     const posUser = sessionStorage.getItem("posUser");
     return (
       <div>
@@ -62,6 +90,16 @@ class MainLayout extends React.Component {
                   type={collapsed ? "menu-unfold" : "menu-fold"}
                   onClick={this.toggle}
                 />
+                <span className="posDate">
+                  <span className="s-t">POS DATE:</span>
+                  {moment(new Date(sessionStorage.getItem("posDate"))).format(
+                    "DD/MM/YYYY"
+                  )}
+                </span>
+                <span className="today">
+                  <span className="s-t">NOW:</span>
+                  {time}
+                </span>
                 <NotiCashier />
               </Header>
               <Content
