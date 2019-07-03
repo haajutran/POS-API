@@ -22,17 +22,22 @@ class TableJoin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableAreas: []
+      tableAreas: [],
+      joined: []
     };
   }
 
-  async componentWillMount() {
+  componentWillMount() {
+    this.fetchData();
+  }
+
+  fetchData = async () => {
     await this.props.requestTableTypes();
     await this.props.requestTableAreas();
-    this.setState({
+    await this.setState({
       tableAreas: this.props.tableAreas
     });
-  }
+  };
 
   getImageNull(item) {
     const { tableTypes } = this.props;
@@ -45,6 +50,13 @@ class TableJoin extends Component {
   async checkTableHold(checkNo) {
     const res = await this.props.checkTableHold(checkNo);
     return res;
+  }
+
+  componentDidUpdate() {
+    const { tableAreas } = this.state;
+    if (tableAreas.length === 0) {
+      this.fetchData();
+    }
   }
 
   renderTablePickup(item) {
@@ -89,25 +101,47 @@ class TableJoin extends Component {
     );
   }
 
-  join = (tIndex, taIndex) => {
-    const { tableAreas } = this.state;
-    var table = tableAreas[tIndex].tableMaps[taIndex];
-
-    table["join"] = !table["join"];
+  join = tableCode => {
+    const { tableAreas, joined } = this.state;
+    if (joined.includes(tableCode)) {
+      joined.splice(joined.indexOf(tableCode), 1);
+    } else {
+      joined.push(tableCode);
+    }
     this.setState({
-      tableAreas
+      joined
     });
+    // var table = tableAreas[tIndex].tableMaps[taIndex];
+
+    // table["join"] = !table["join"];
+    // this.setState({
+    //   tableAreas
+    // });
+  };
+
+  handleClose = () => {
+    this.setState({
+      tableAreas: [],
+      joined: []
+    });
+    this.props.cancelJoin();
+  };
+
+  handleOK = () => {
+    const { joined } = this.state;
+    this.props.okJoin(joined);
   };
 
   render() {
     // console.log(statisticSelected);
-    const { tableTypes, isLoading } = this.props;
-    const { tableAreas } = this.props;
-    var displayed = [];
+    const { joined } = this.state;
+    const { tableAreas, tableTypes, isLoading, tableCode } = this.props;
     return (
       <div>
+        <Button onClick={() => this.handleClose()}>Close</Button>
+        <Button onClick={() => this.handleOK()}>OK</Button>
         {tableTypes && tableAreas.length > 0 ? (
-          tableAreas.map((ta, taIndex) => (
+          tableAreas.map(ta => (
             <div className="table-map-grid">
               <h3>{ta.tableAreaName}</h3>
               <List
@@ -121,10 +155,14 @@ class TableJoin extends Component {
                   xxl: 3
                 }}
                 dataSource={ta.tableMaps}
-                renderItem={(item, tIndex) =>
-                  item.bkTbl === "0" && (
-                    <List.Item onClick={() => this.join(taIndex, tIndex)}>
-                      <div className={item.join === true && "table-join"}>
+                renderItem={item =>
+                  item.bkTbl === "0" && item.tableCode !== tableCode ? (
+                    <List.Item onClick={() => this.join(item.tableCode)}>
+                      <div
+                        className={
+                          joined.includes(item.tableCode) && "table-join"
+                        }
+                      >
                         <img
                           style={{ width: "100%" }}
                           src={
@@ -143,6 +181,8 @@ class TableJoin extends Component {
                         </div>
                       </div>
                     </List.Item>
+                  ) : (
+                    <span />
                   )
                 }
               />

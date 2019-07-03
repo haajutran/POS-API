@@ -30,7 +30,8 @@ class DetailEmpty extends Component {
       statisticSelected: [],
       clientModalVisible: false,
       currentClient: "",
-      joinModalVisible: false
+      joinModalVisible: false,
+      tmpIDTableJoin: ""
     };
   }
 
@@ -111,28 +112,41 @@ class DetailEmpty extends Component {
     });
   };
 
-  showJoinModal = () => {
-    this.setState({
-      joinModalVisible: true
-    });
+  showJoinModal = async () => {
+    const { tableCode, tmpIDTableJoin } = this.state;
+    if (tmpIDTableJoin === "") {
+      const tmpID = await this.props.getTmpID();
+      console.log(tmpID);
+      this.setState({
+        tmpIDTableJoin: tmpID
+      });
+    }
+    const res = await this.props.deleteTableJoin(tableCode);
+    if (res === 200) {
+      this.setState({
+        joinModalVisible: true
+      });
+    }
   };
 
-  handleOkJoin = e => {
-    console.log(e);
-    this.setState({
-      joinModalVisible: false
-    });
+  handleOkJoin = async joined => {
+    const { tableCode, tmpIDTableJoin } = this.state;
+    const res = await this.props.addTablesJoin(
+      tmpIDTableJoin,
+      tableCode,
+      joined
+    );
+    if (res === 200) {
+      this.setState({
+        joinModalVisible: false
+      });
+    }
   };
 
   handleCancelJoin = e => {
-    console.log(e);
     this.setState({
       joinModalVisible: false
     });
-  };
-
-  aaa = ttt => {
-    alert(ttt);
   };
 
   render() {
@@ -340,7 +354,11 @@ class DetailEmpty extends Component {
               </div>
               <div className="body">
                 <div style={{ textAlign: "center" }}>
-                  <Button onClick={this.showJoinModal} type="primary" ghost>
+                  <Button
+                    onClick={() => this.showJoinModal()}
+                    type="primary"
+                    ghost
+                  >
                     Join Tables
                   </Button>
                 </div>
@@ -370,7 +388,11 @@ class DetailEmpty extends Component {
           onOk={this.handleOkJoin}
           onCancel={this.handleCancelJoin}
         >
-          <TableJoin aaa={this.aaa} />
+          <TableJoin
+            tableCode={tableCode}
+            cancelJoin={this.handleCancelJoin}
+            okJoin={this.handleOkJoin}
+          />
         </Modal>
       </div>
     );

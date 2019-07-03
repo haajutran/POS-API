@@ -45,6 +45,65 @@ export const actionCreators = {
       console.log(e.message);
     }
   },
+  getTmpID: () => async () => {
+    try {
+      const tmpID = await dataServices.get(`api/TableInfo/GetTmpIDTableJoin`);
+
+      if (tmpID.status === 200) {
+        return tmpID.data[0].tmpIDTableJoin;
+      }
+    } catch (e) {
+      console.log(e.message);
+    }
+  },
+  addTablesJoin: (tmpIDTableJoin, tableMain, joined) => async () => {
+    try {
+      const posDate = new Date(sessionStorage.getItem("posDate"));
+      const posDay = posDate.getDay();
+      const posMonth = posDate.getMonth();
+      const posYear = posDate.getFullYear();
+      for (var i = 0; i < joined.length; i++) {
+        // const table = {
+        //   RVCNo: parseInt(sessionStorage.getItem("rvcNo")),
+        //   UserLogin: sessionStorage.getItem("posUser"),
+        //   TableMain: tableMain,
+        //   TableJoin: joined[i],
+        //   TmpIDTableJoin: parseFloat(tmpIDTableJoin),
+        //   POSDay: posDay,
+        //   POSMonth: posMonth,
+        //   POSYear: posYear
+        // };
+        const rvcNo = parseInt(sessionStorage.getItem("rvcNo"));
+        const params = `?RVCNo=${rvcNo}&UserLogin=${sessionStorage.getItem(
+          "posUser"
+        )}&TableMain=${tableMain}&TableJoin=${
+          joined[i]
+        }&TmpIDTableJoin=${parseFloat(
+          tmpIDTableJoin
+        )}&POSDay=${posDay}&POSMonth=${posMonth}&POSYear=${posYear}`;
+        // console.log(table);
+        const res = await dataServices.post(
+          "api/TableInfo/AddTableJoin" + params
+        );
+        console.log(res);
+      }
+      return 200;
+    } catch (e) {
+      console.log(e.message);
+    }
+  },
+  deleteTableJoin: tableCode => async () => {
+    try {
+      const rvcNo = sessionStorage.getItem("rvcNo");
+      const res = await dataServices.get(
+        `api/TableInfo/DeleteTableJoin?rvcNo=${rvcNo}&tableCode=${tableCode}`
+      );
+
+      return res.status;
+    } catch (e) {
+      console.log(e.message);
+    }
+  },
   requestClientList: ClientInfo => async dispatch => {
     try {
       dispatch({ type: requestClientListType });
