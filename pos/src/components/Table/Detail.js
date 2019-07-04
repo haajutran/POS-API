@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 // import { actionCreators } from "../store/NotiCashier";
-import { Icon, Badge, Row, Col, Input, Button, Table } from "antd";
+import { Icon, Badge, Row, Col, Input, Button, Table, Form } from "antd";
 
 class TableDetail extends Component {
   constructor(props) {
@@ -16,7 +16,11 @@ class TableDetail extends Component {
 
   render() {
     // const { isLoading, notiCashier } = this.props;
-
+    const { getFieldDecorator } = this.props.form;
+    const formItemLayout = {
+      labelCol: { span: 12 },
+      wrapperCol: { span: 12 }
+    };
     return (
       <div className="detail-page">
         <Row>
@@ -73,10 +77,112 @@ class TableDetail extends Component {
                     <Button type="primary" icon="alert" size="large" />
                   </div>
                 </Col>
+                <Col style={{ marginTop: "1em" }}>
+                  <div className="nvf">
+                    <Form
+                      onSubmit={this.handleSubmit}
+                      className="no-valid-form"
+                    >
+                      <Row gutter={16}>
+                        <Col xl={12}>
+                          <Form.Item label="Sub Amount" {...formItemLayout}>
+                            {getFieldDecorator("username", {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: "Please input your username!"
+                                }
+                              ]
+                            })(<Input />)}
+                          </Form.Item>
+                        </Col>
+                        <Col xl={12}>
+                          <Form.Item label="Tax Amount" {...formItemLayout}>
+                            {getFieldDecorator("username", {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: "Please input your username!"
+                                }
+                              ]
+                            })(<Input />)}
+                          </Form.Item>
+                        </Col>
+                        <Col xl={12}>
+                          <Form.Item label="Discount" {...formItemLayout}>
+                            {getFieldDecorator("username")(<Input />)}
+                          </Form.Item>
+                        </Col>
+                        <Col xl={12}>
+                          <Form.Item label="Total Amount" {...formItemLayout}>
+                            {getFieldDecorator("username")(<Input />)}
+                          </Form.Item>
+                        </Col>
+                        <Col xl={12}>
+                          <Form.Item label="Service Charge" {...formItemLayout}>
+                            {getFieldDecorator("username")(<Input />)}
+                          </Form.Item>
+                        </Col>
+                        <Col xl={12}>
+                          <Form.Item label="Total Due" {...formItemLayout}>
+                            {getFieldDecorator("username")(<Input />)}
+                          </Form.Item>
+                        </Col>
+                        <Col xl={12}>
+                          <Form.Item label="Special Tax" {...formItemLayout}>
+                            {getFieldDecorator("username")(<Input />)}
+                          </Form.Item>
+                        </Col>
+                        <Col xl={12}>
+                          <Form.Item label="Due USD" {...formItemLayout}>
+                            {getFieldDecorator("username")(<Input />)}
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </div>
+                </Col>
+                <Col>
+                  <div className="ab">
+                    <Row>
+                      <Col xl={16}>
+                        <Button icon="close" ghost>
+                          Cancel Bill
+                        </Button>
+                        <Button icon="search" ghost>
+                          Ord Quickly
+                        </Button>
+                        <Button icon="menu" ghost>
+                          Top Menu
+                        </Button>
+                        <Button icon="deployment-unit" ghost>
+                          Request
+                        </Button>
+                        <Button icon="stop" ghost>
+                          Void
+                        </Button>
+                        <Button icon="appstore" ghost>
+                          Add On
+                        </Button>
+                        <Button icon="swap" ghost>
+                          Change Qty
+                        </Button>
+                        <Button icon="bars" ghost>
+                          Other Options
+                        </Button>
+                      </Col>
+                      <Col xl={6}>
+                        <Button icon="select" ghost style={{ height: 130 }}>
+                          Send Order
+                        </Button>
+                      </Col>
+                    </Row>
+                  </div>
+                </Col>
               </Row>
             </div>
           </Col>
-          <Col span={14} />
+          <Col span={14} />>
         </Row>
       </div>
     );
@@ -111,5 +217,5 @@ const columns = [
 //   state => state.notiCashier,
 //   dispatch => bindActionCreators(actionCreators, dispatch)
 // )(NotiCashier);
-
-export default TableDetail;
+const DF = Form.create({ name: "df" })(TableDetail);
+export default DF;

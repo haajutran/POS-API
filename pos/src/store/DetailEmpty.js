@@ -3,9 +3,13 @@ import * as dataServices from "../services/DataServices";
 const requestClientListType = "REQUEST_CLIENT_LIST";
 const receiveClientListType = "RECEIVE_CLIENT_LIST";
 
+const requestTablesJoinType = "REQUEST_TABLES_JOIN";
+const receiveTablesJoinType = "RECEIVE_TABLES_JOIN";
+
 const initialState = {
   isLoading: false,
-  clientList: []
+  clientList: [],
+  tablesJoin: []
 };
 
 export const actionCreators = {
@@ -73,7 +77,7 @@ export const actionCreators = {
         //   POSMonth: posMonth,
         //   POSYear: posYear
         // };
-        const rvcNo = parseInt(sessionStorage.getItem("rvcNo"));
+        const rvcNo = sessionStorage.getItem("rvcNo");
         const params = `?RVCNo=${rvcNo}&UserLogin=${sessionStorage.getItem(
           "posUser"
         )}&TableMain=${tableMain}&TableJoin=${
@@ -89,6 +93,23 @@ export const actionCreators = {
       }
       return 200;
     } catch (e) {
+      console.log(e.message);
+    }
+  },
+  requestTablesJoin: (tableMain, tmpIDTableJoin) => async dispatch => {
+    try {
+      dispatch({ type: requestTablesJoinType });
+      const rvcNo = sessionStorage.getItem("rvcNo");
+      const res = await dataServices.get(
+        `api/TableInfo/GetTableJoin?RVCNo=${rvcNo}&TableMain=${tableMain}&tmpIDTableJoin=${tmpIDTableJoin}`
+      );
+      // console.log(rvcNo, tableMain, tmpIDTableJoin);
+      console.log(res);
+      if (res.status === 200) {
+        dispatch({ type: receiveTablesJoinType, tablesJoin: res.data });
+      }
+    } catch (e) {
+      dispatch({ type: receiveTablesJoinType, tablesJoin: [] });
       console.log(e.message);
     }
   },
@@ -134,6 +155,20 @@ export const reducer = (state, action) => {
     return {
       ...state,
       clientList: action.clientList,
+      isLoading: false
+    };
+  }
+  if (action.type === requestTablesJoinType) {
+    return {
+      ...state,
+      isLoading: true
+    };
+  }
+
+  if (action.type === receiveTablesJoinType) {
+    return {
+      ...state,
+      tablesJoin: action.tablesJoin,
       isLoading: false
     };
   }

@@ -284,3 +284,18 @@
   /* transition: .5s ea; */
   transition: max-height 1s ease;
 }
+.nvf {
+  background: #fff;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+.no-valid-form .ant-form-item {
+  margin-bottom: 0;
+}
+.ab {
+  padding: 1em 1em 0 1em;
+}
+.ab .ant-btn {
+  width: 135px;
+  margin: 5px;
+}

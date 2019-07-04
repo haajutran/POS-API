@@ -15,6 +15,7 @@ import {
   Modal
 } from "antd";
 import TableJoin from "./TableJoin";
+import TableJoined from "./TableJoined";
 
 const { TextArea, Search } = Input;
 
@@ -51,7 +52,10 @@ class DetailEmpty extends Component {
       tableCode
     });
   }
-
+  getImageNull(item) {
+    const { tableTypes } = this.props;
+    return tableTypes.find(i => i.tableType1 === item.tableType).imageNull;
+  }
   setTimeMeal = async mealPeriod => {
     const today = new Date();
     var hours = today.getHours().toString();
@@ -137,6 +141,7 @@ class DetailEmpty extends Component {
       joined
     );
     if (res === 200) {
+      this.props.requestTablesJoin(tableCode, tmpIDTableJoin);
       this.setState({
         joinModalVisible: false
       });
@@ -183,8 +188,8 @@ class DetailEmpty extends Component {
       statisticSelected,
       currentClient
     } = this.state;
-    const { clientList } = this.props;
-
+    const { clientList, tablesJoin } = this.props;
+    console.log(tablesJoin);
     const columns = [
       {
         title: "Code",
@@ -353,6 +358,9 @@ class DetailEmpty extends Component {
                 Table Join
               </div>
               <div className="body">
+                <div>
+                  <TableJoined tables={tablesJoin} />
+                </div>
                 <div style={{ textAlign: "center" }}>
                   <Button
                     onClick={() => this.showJoinModal()}
