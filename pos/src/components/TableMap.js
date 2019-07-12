@@ -68,7 +68,7 @@ class TableMap extends Component {
     // const aaa = this.checkTableHold(item.checkNo)
 
     return (
-      <div>
+      <Link to={`/tableDetail/${item.checkNo}`}>
         <img
           style={{ width: "100%" }}
           src={"data:image/png;base64, " + this.getImagePickup(item.tableType)}
@@ -103,7 +103,7 @@ class TableMap extends Component {
             <Icon type="pause-circle" className={`holding`} />
           )}
         </div>
-      </div>
+      </Link>
     );
   }
 
@@ -114,7 +114,7 @@ class TableMap extends Component {
       isLoading,
       RVCQuickInfomation
     } = this.props;
-    console.log(tableAreas);
+
     var displayed = [];
     return (
       <div>

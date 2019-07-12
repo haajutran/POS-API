@@ -292,10 +292,105 @@
 .no-valid-form .ant-form-item {
   margin-bottom: 0;
 }
+.no-valid-form .ant-form-item-label {
+  text-align: left;
+}
 .ab {
   padding: 1em 1em 0 1em;
 }
 .ab .ant-btn {
   width: 135px;
   margin: 5px;
+}
+
+.order-zone {
+  padding: 1em 0;
+  background: #00b4db; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    hsl(195, 100%, 35%),
+    #00b4db
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #0083b0,
+    #00b4db
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+.oib {
+  padding: 0 1em;
+}
+.oib .seperate {
+  margin-top: 5px;
+}
+.oib .title {
+  /* color: #fff; */
+  font-weight: bold;
+  color: #fff;
+  font-size: 16px;
+}
+.oib .value {
+  color: rgba(255, 255, 255, 0.959);
+}
+.hd-btn {
+  text-align: center;
+}
+.hd-btn button {
+  height: 90px;
+  width: 90px;
+  /* margin-top: 10px; */
+  font-size: 30px;
+  background: #4cc9e9;
+  color: #fff;
+  border-color: #fff;
+}
+.hd-btn button:hover {
+  background: #fff;
+  color: #4cc9e9;
+  border-color: #4cc9e9;
+}
+.oz {
+  padding: 1em;
+  display: flex;
+  flex-wrap: wrap;
+}
+.order-item {
+  height: 75px;
+  width: 160px;
+  padding: 10px;
+  word-break: break-word;
+  margin-right: 1em;
+  margin-bottom: 1em;
+  overflow: hidden;
+  font-size: 16px;
+  align-self: auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  border-radius: 5px;
+  color: #fff;
+  background: #4cc9e9;
+}
+.order-item.main-item {
+  background: rgb(218, 232, 243);
+  color: #464646;
+}
+.oi-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  line-height: 18px; /* fallback */
+  -webkit-line-clamp: 1; /* number of lines to show */
+  -webkit-box-orient: vertical;
+}
+.breadscrumb-menu {
+  margin: 1em;
+}
+.breadscrumb-menu .ant-breadcrumb-separator {
+  color: #fff;
+}
+.breadscrumb-menu .ant-breadcrumb-link {
+  font-size: 16px;
+  color: #fff;
 }
