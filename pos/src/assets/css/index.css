@@ -150,6 +150,7 @@
     #355c7d
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   color: #fff;
+  margin-bottom: 1em;
 }
 
 .info-zone .border-right {
@@ -179,7 +180,8 @@
 }
 
 .ifz-2 .ant-btn {
-  margin-right: 8px;
+  width: 120px;
+  margin: 5px;
 }
 .if-t {
   background: #fff;

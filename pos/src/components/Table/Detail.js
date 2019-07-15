@@ -19,7 +19,7 @@ class TableDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      bsMenus: [],
+      bsMenus: [{}],
       previousMenuNo: ""
     };
   }
@@ -60,34 +60,65 @@ class TableDetail extends Component {
     return res;
   };
 
-  handleClickMenu = async menuNo => {
+  handleClickMenu = async (menuNo, menuName) => {
+    // console.log(menuNo, menuName);
+
     const { bsMenus } = this.state;
     await this.props.requestMenus(menuNo);
     // var bsMenus = [];
+    console.log(menuNo);
     if (menuNo === 0) {
       this.setState({
         bsMenus: []
       });
-    } else if (!bsMenus.includes(menuNo)) {
-      bsMenus.push(menuNo);
-      console.log(bsMenus);
-      this.setState({
-        bsMenus
-      });
     } else {
-      var bsMenusTemp = [];
-      for (var bsm in bsMenus) {
-        console.log(bsMenus[bsm]);
-        bsMenusTemp.push(bsMenus[bsm]);
-        if (bsMenus[bsm] === menuNo) {
-          break;
+      const isExisted = bsMenus.find(item => item.menuNo === menuNo);
+      console.log(isExisted);
+      if (!isExisted) {
+        console.log(menuNo);
+        console.log(bsMenus);
+        const menu = {
+          menuNo,
+          menuName
+        };
+        // bsMenus.push(menuNo);
+        console.log(menu);
+        bsMenus.push(menu);
+        console.log(bsMenus);
+        this.setState({
+          bsMenus
+        });
+      } else {
+        var bsMenusTemp = [];
+        var i = 0;
+        for (var bsm in bsMenus) {
+          // console.log(bsMenus[bsm].menuNo);
+          const bsMenusClone = bsMenus[bsm];
+          const menuNoTemp = bsMenusClone.menuNo;
+          const menuNameTemp = bsMenusClone.menuName;
+          if (menuNoTemp) {
+            console.log(menuName);
+            const menu = {
+              menuNo: menuNoTemp,
+              menuName: menuNameTemp
+            };
+            // bsMenusTemp.push(bsMenus[bsm]);
+            bsMenusTemp.push(menu);
+            if (bsMenus[bsm].menuNo === menuNo) {
+              break;
+            }
+          }
         }
+        console.log(bsMenusTemp);
+        this.setState({
+          bsMenus: bsMenusTemp
+        });
       }
-      console.log(bsMenusTemp);
-      this.setState({
-        bsMenus: bsMenusTemp
-      });
     }
+
+    // else {
+
+    // }
   };
 
   handleClickMainMenu = async iCode => {
@@ -107,13 +138,13 @@ class TableDetail extends Component {
     };
     const { tableDetail, checkNo, totalGuests, bsMenus } = this.state;
     const { menus, mainMenus, course } = this.props;
-
-    console.log(menus);
+    console.log(bsMenus);
+    // console.log(menus);
     return (
       <div className="detail-page">
         {tableDetail && (
           <Row gutter={20}>
-            <Col span={10}>
+            <Col xs={24} md={14} ls={14} xl={10}>
               <div className="info-zone">
                 <Row>
                   <Col>
@@ -301,7 +332,7 @@ class TableDetail extends Component {
                 </Row>
               </div>
             </Col>
-            <Col span={14}>
+            <Col xs={24} xl={14}>
               <div className="order-zone">
                 <Row>
                   <Col>
@@ -399,15 +430,15 @@ class TableDetail extends Component {
                     <div className="breadscrumb-menu">
                       <Breadcrumb>
                         <Breadcrumb.Item
-                          onClick={() => this.handleClickMenu(0)}
+                          onClick={() => this.handleClickMenu(0, "")}
                         >
                           <Icon type="home" />
                         </Breadcrumb.Item>
                         {bsMenus.map(bsm => (
                           <Breadcrumb.Item
-                            onClick={() => this.handleClickMenu(bsm)}
+                            onClick={() => this.handleClickMenu(bsm.menuNo, "")}
                           >
-                            {bsm}
+                            {bsm.menuName}
                           </Breadcrumb.Item>
                         ))}
                       </Breadcrumb>
@@ -417,7 +448,9 @@ class TableDetail extends Component {
                       {menus.map(menu => (
                         <div
                           className="order-item"
-                          onClick={() => this.handleClickMenu(menu.menuNo)}
+                          onClick={() =>
+                            this.handleClickMenu(menu.menuNo, menu.menuName)
+                          }
                         >
                           <div className="oi-text">
                             <span>{menu.menuName}</span>
