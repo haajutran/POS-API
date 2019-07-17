@@ -183,6 +183,11 @@
   width: 120px;
   margin: 5px;
 }
+
+.ifz-2 .ant-btn.active {
+  background: rgb(71, 202, 253);
+  border-color: #fff;
+}
 .if-t {
   background: #fff;
 }
@@ -353,9 +358,8 @@
 }
 .oz {
   padding: 1em;
-  display: flex;
-  flex-wrap: wrap;
 }
+
 .order-item {
   height: 75px;
   width: 160px;
@@ -386,6 +390,10 @@
   -webkit-line-clamp: 1; /* number of lines to show */
   -webkit-box-orient: vertical;
 }
+.oi-text p {
+  margin-bottom: 0;
+  margin: auto;
+}
 .breadscrumb-menu {
   margin: 1em;
 }
@@ -395,4 +403,21 @@
 .breadscrumb-menu .ant-breadcrumb-link {
   font-size: 16px;
   color: #fff;
+}
+
+.menus-zone {
+  display: flex;
+  flex-wrap: wrap;
+}
+.item-zone {
+  display: flex;
+  flex-wrap: wrap;
+  border-top: #fff solid 1px;
+  padding-top: 1em;
+}
+.item-zone .order-item {
+  height: 90px;
+}
+.p-text {
+  height: 20px;
 }

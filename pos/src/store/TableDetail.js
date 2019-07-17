@@ -17,9 +17,10 @@ const initialState = {
 };
 
 export const actionCreators = {
-  requestMenus: menuNo => async dispatch => {
+  requestMenus: menuNo => async (dispatch, getState) => {
     try {
       dispatch({ type: requestMenusType });
+      const menusState = getState().tableDetail.menus;
       const rvcNo = sessionStorage.getItem("rvcNo");
       var res;
       var menus = [];
@@ -38,7 +39,7 @@ export const actionCreators = {
             `api/Order/GetItemByMenu?RVCNo=${rvcNo}&sMenuID=${menuNo}&MyPeriod=1`
           );
           if (res2.status === 200) {
-            menus = [];
+            menus = menusState;
             mainMenus = res2.data;
           }
         } else {

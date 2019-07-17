@@ -14,13 +14,16 @@ import {
   Breadcrumb
 } from "antd";
 import moment from "moment";
+import * as CurrencyFormat from "react-currency-format";
 
 class TableDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
       bsMenus: [{}],
-      previousMenuNo: ""
+      previousMenuNo: "",
+      selectedGuest: 0,
+      selectedCourse: 0
     };
   }
 
@@ -66,25 +69,21 @@ class TableDetail extends Component {
     const { bsMenus } = this.state;
     await this.props.requestMenus(menuNo);
     // var bsMenus = [];
-    console.log(menuNo);
+    // console.log(menuNo);
     if (menuNo === 0) {
       this.setState({
         bsMenus: []
       });
     } else {
       const isExisted = bsMenus.find(item => item.menuNo === menuNo);
-      console.log(isExisted);
+      // console.log(isExisted);
       if (!isExisted) {
-        console.log(menuNo);
-        console.log(bsMenus);
         const menu = {
           menuNo,
           menuName
         };
         // bsMenus.push(menuNo);
-        console.log(menu);
         bsMenus.push(menu);
-        console.log(bsMenus);
         this.setState({
           bsMenus
         });
@@ -125,6 +124,18 @@ class TableDetail extends Component {
     console.log(iCode);
   };
 
+  selectGuest = guest => {
+    this.setState({
+      selectedGuest: guest
+    });
+  };
+
+  selectCourse = course => {
+    this.setState({
+      selectedCourse: course
+    });
+  };
+
   render() {
     // const { isLoading, notiCashier } = this.props;
     const { getFieldDecorator } = this.props.form;
@@ -136,10 +147,17 @@ class TableDetail extends Component {
       labelCol: { span: 10 },
       wrapperCol: { span: 14 }
     };
-    const { tableDetail, checkNo, totalGuests, bsMenus } = this.state;
+    const {
+      tableDetail,
+      checkNo,
+      totalGuests,
+      bsMenus,
+      selectedGuest,
+      selectedCourse
+    } = this.state;
     const { menus, mainMenus, course } = this.props;
-    console.log(bsMenus);
-    // console.log(menus);
+    // console.log(course);
+    console.log(mainMenus);
     return (
       <div className="detail-page">
         {tableDetail && (
@@ -171,17 +189,43 @@ class TableDetail extends Component {
                   </Col>
                   <Col>
                     <div className="ifz-2">
-                      <Icon type="appstore" />
+                      <Icon type="user" />
+                      <Button
+                        type="primary"
+                        onClick={() => this.selectGuest(0)}
+                        className={selectedGuest === 0 && "active"}
+                      >
+                        ALL
+                      </Button>
                       {totalGuests.map(g => (
-                        <Button type="primary">#{g}</Button>
+                        <Button
+                          className={selectedGuest === g && "active"}
+                          onClick={() => this.selectGuest(g)}
+                          type="primary"
+                        >
+                          #{g}
+                        </Button>
                       ))}
                     </div>
                   </Col>
                   <Col>
                     <div className="ifz-2">
-                      <Icon type="experiment" />
+                      <Icon type="book" />
+                      <Button
+                        type="primary"
+                        onClick={() => this.selectCourse(0)}
+                        className={selectedCourse === 0 && "active"}
+                      >
+                        ALL
+                      </Button>
                       {course.map(c => (
-                        <Button type="primary">{c.courseName}</Button>
+                        <Button
+                          onClick={() => this.selectCourse(c)}
+                          className={selectedCourse === c && "active"}
+                          type="primary"
+                        >
+                          {c.courseName}
+                        </Button>
                       ))}
                     </div>
                   </Col>
@@ -445,30 +489,44 @@ class TableDetail extends Component {
                     </div>
 
                     <div className="oz">
-                      {menus.map(menu => (
-                        <div
-                          className="order-item"
-                          onClick={() =>
-                            this.handleClickMenu(menu.menuNo, menu.menuName)
-                          }
-                        >
-                          <div className="oi-text">
-                            <span>{menu.menuName}</span>
+                      <div className="menus-zone">
+                        {menus.map(menu => (
+                          <div
+                            className="order-item"
+                            onClick={() =>
+                              this.handleClickMenu(menu.menuNo, menu.menuName)
+                            }
+                          >
+                            <div className="oi-text">
+                              <p>{menu.menuName}</p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                      {mainMenus.map(mainMenu => (
-                        <div
-                          className="order-item main-item"
-                          onClick={() =>
-                            this.handleClickMainMenu(mainMenu.iCode)
-                          }
-                        >
-                          <div className="oi-text">
-                            <span>{mainMenu.iName}</span>
+                        ))}
+                      </div>
+                      <div className="item-zone">
+                        {mainMenus.map(mainMenu => (
+                          <div
+                            className="order-item main-item"
+                            onClick={() =>
+                              this.handleClickMainMenu(mainMenu.iCode)
+                            }
+                          >
+                            <div className="oi-text">
+                              <p>{mainMenu.iName}</p>
+                            </div>
+                            <div className="p-text">
+                              <p>
+                                <CurrencyFormat
+                                  value="123123"
+                                  displayType={"text"}
+                                  thousandSeparator={true}
+                                  prefix={mainMenu.crSymbol}
+                                />
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </Col>
                 </Row>
