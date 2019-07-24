@@ -23,7 +23,9 @@ class TableDetail extends Component {
       bsMenus: [{}],
       previousMenuNo: "",
       selectedGuest: 0,
-      selectedCourse: 0
+      selectedCourse: 0,
+      currentMenu: "",
+      viewSum: 0
     };
   }
 
@@ -34,8 +36,16 @@ class TableDetail extends Component {
     const params = this.props.match.params;
 
     if (params) {
+      const { selectedGuest, selectedCourse, viewSum } = this.state;
+
       const { checkNo } = params;
 
+      await this.props.requestBillDetail(
+        checkNo,
+        viewSum,
+        selectedGuest,
+        selectedCourse
+      );
       const tableDetail = await this.props.getTableDetail(checkNo);
       const adult = tableDetail.adult;
       const child = tableDetail.child;
@@ -63,10 +73,13 @@ class TableDetail extends Component {
     return res;
   };
 
-  handleClickMenu = async (menuNo, menuName) => {
+  handleClickMenu = async (menuNo, menuName, hasSubMenu) => {
     // console.log(menuNo, menuName);
 
     const { bsMenus } = this.state;
+    this.setState({
+      currentMenu: menuNo
+    });
     await this.props.requestMenus(menuNo);
     // var bsMenus = [];
     // console.log(menuNo);
@@ -78,15 +91,17 @@ class TableDetail extends Component {
       const isExisted = bsMenus.find(item => item.menuNo === menuNo);
       // console.log(isExisted);
       if (!isExisted) {
-        const menu = {
-          menuNo,
-          menuName
-        };
-        // bsMenus.push(menuNo);
-        bsMenus.push(menu);
-        this.setState({
-          bsMenus
-        });
+        if (hasSubMenu === 1) {
+          const menu = {
+            menuNo,
+            menuName
+          };
+          // bsMenus.push(menuNo);
+          bsMenus.push(menu);
+          this.setState({
+            bsMenus
+          });
+        }
       } else {
         var bsMenusTemp = [];
         var i = 0;
@@ -121,19 +136,61 @@ class TableDetail extends Component {
   };
 
   handleClickMainMenu = async iCode => {
-    console.log(iCode);
+    const { checkNo, selectedCourse, selectedGuest } = this.state;
+
+    const data = {
+      CheckNo: checkNo,
+      ICode: iCode,
+      isAddOn: false,
+      changeOrderNo: 0,
+      SelectedCourse: selectedCourse,
+      SelectedGuest: selectedGuest
+    };
+    const res = await this.props.postItemManual(data);
+    console.log(res);
   };
 
-  selectGuest = guest => {
-    this.setState({
+  selectGuest = async guest => {
+    await this.setState({
       selectedGuest: guest
     });
+    const { checkNo, selectedGuest, selectedCourse, viewSum } = this.state;
+    await this.props.requestBillDetail(
+      checkNo,
+      viewSum,
+      selectedGuest,
+      selectedCourse
+    );
   };
 
-  selectCourse = course => {
-    this.setState({
+  selectCourse = async course => {
+    await this.setState({
       selectedCourse: course
     });
+    const { checkNo, selectedGuest, selectedCourse, viewSum } = this.state;
+
+    await this.props.requestBillDetail(
+      checkNo,
+      viewSum,
+      selectedGuest,
+      selectedCourse.courseCode
+    );
+  };
+
+  sum = async () => {
+    // console.log(viewSum);
+    await this.setState({
+      viewSum: this.state.viewSum === 0 ? 1 : 0,
+      selectedCourse: 0
+    });
+    const { viewSum, checkNo, selectedGuest, selectedCourse } = this.state;
+    await this.props.requestBillDetail(
+      checkNo,
+      viewSum,
+      selectedGuest,
+      selectedCourse.courseCode
+    );
+    console.log("asdasd");
   };
 
   render() {
@@ -153,11 +210,13 @@ class TableDetail extends Component {
       totalGuests,
       bsMenus,
       selectedGuest,
-      selectedCourse
+      selectedCourse,
+      currentMenu,
+      viewSum
     } = this.state;
-    const { menus, mainMenus, course } = this.props;
+    const { menus, mainMenus, course, billDetail } = this.props;
     // console.log(course);
-    console.log(mainMenus);
+    console.log(billDetail);
     return (
       <div className="detail-page">
         {tableDetail && (
@@ -208,7 +267,7 @@ class TableDetail extends Component {
                       ))}
                     </div>
                   </Col>
-                  <Col>
+                  <Col className={` ${viewSum === 1 ? `close` : ``}`}>
                     <div className="ifz-2">
                       <Icon type="book" />
                       <Button
@@ -232,147 +291,191 @@ class TableDetail extends Component {
                   <Col>
                     <div className="if-t">
                       <Table
-                        dataSource={dataSource}
+                        className="bill-detail-table"
+                        dataSource={billDetail}
                         columns={columns}
-                        scroll={{ y: 340 }}
+                        size="default"
+                        // scroll={{ y: 340 }}
+                        // bordered
                       />
                     </div>
                   </Col>
                   <Col>
                     <div className="ifz-3">
-                      <Button type="primary" icon="clock-circle" size="large" />
+                      <Button
+                        type="primary"
+                        icon="plus-square"
+                        size="large"
+                        onClick={() => this.sum()}
+                      />
                       <Button type="primary" icon="scissor" size="large" />
                       <Button type="primary" icon="alert" size="large" />
                     </div>
                   </Col>
-                  <Col style={{ marginTop: "1em" }}>
-                    <div className="nvf">
-                      <Form
-                        onSubmit={this.handleSubmit}
-                        className="no-valid-form"
-                      >
-                        <Row gutter={16}>
-                          <Col xl={12}>
-                            <Row>
-                              <Col span={12}>
-                                <b>Sub Amount</b>
+                  <div className={`bz ${viewSum === 1 ? `close` : ``}`}>
+                    <Col style={{ marginTop: "1em" }}>
+                      <div className="nvf">
+                        <Form
+                          onSubmit={this.handleSubmit}
+                          className="no-valid-form"
+                        >
+                          {billDetail && billDetail[0] && (
+                            <Row gutter={16}>
+                              <Col xl={12}>
+                                <Row>
+                                  <Col span={12}>
+                                    <b>Sub Amount</b>
+                                  </Col>
+                                  <Col span={12}>
+                                    <CurrencyFormat
+                                      value={billDetail[0].totalSubAmount}
+                                      displayType={"text"}
+                                      thousandSeparator={true}
+                                    />
+                                  </Col>
+                                </Row>
                               </Col>
-                              <Col span={12}>
-                                <span>sdsd</span>
+                              <Col xl={12}>
+                                <Row>
+                                  <Col span={12}>
+                                    <b>Tax Amount</b>
+                                  </Col>
+                                  <Col span={12}>
+                                    <CurrencyFormat
+                                      value={billDetail[0].totalTaxAmount}
+                                      displayType={"text"}
+                                      thousandSeparator={true}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Col>
+                              <Col xl={12}>
+                                <Row>
+                                  <Col span={12}>
+                                    <b>Discount</b>
+                                  </Col>
+                                  <Col span={12}>
+                                    <CurrencyFormat
+                                      value={billDetail[0].totalDiscount}
+                                      displayType={"text"}
+                                      thousandSeparator={true}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Col>
+                              <Col xl={12}>
+                                <Row>
+                                  <Col span={12}>
+                                    <b>Total Amount</b>
+                                  </Col>
+                                  <Col span={12}>
+                                    <CurrencyFormat
+                                      value={billDetail[0].totalAmount}
+                                      displayType={"text"}
+                                      thousandSeparator={true}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Col>
+                              <Col xl={12}>
+                                <Row>
+                                  <Col span={12}>
+                                    <b>Service Charge</b>
+                                  </Col>
+                                  <Col span={12}>
+                                    <CurrencyFormat
+                                      value={billDetail[0].totalServiceCharge}
+                                      displayType={"text"}
+                                      thousandSeparator={true}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Col>
+                              <Col xl={12}>
+                                <Row>
+                                  <Col span={12}>
+                                    <b>Total Due</b>
+                                  </Col>
+                                  <Col span={12}>
+                                    <CurrencyFormat
+                                      value={billDetail[0].totalDue}
+                                      displayType={"text"}
+                                      thousandSeparator={true}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Col>
+                              <Col xl={12}>
+                                <Row>
+                                  <Col span={12}>
+                                    <b>Special Tax</b>
+                                  </Col>
+                                  <Col span={12}>
+                                    <CurrencyFormat
+                                      value={billDetail[0].totalSpecialTax}
+                                      displayType={"text"}
+                                      thousandSeparator={true}
+                                    />
+                                  </Col>
+                                </Row>
+                              </Col>
+                              <Col xl={12}>
+                                <Row>
+                                  <Col span={12}>
+                                    <b>Due USD</b>
+                                  </Col>
+                                  <Col span={12}>
+                                    <CurrencyFormat
+                                      value={billDetail[0].totalDueUSD}
+                                      displayType={"text"}
+                                      thousandSeparator={true}
+                                    />
+                                  </Col>
+                                </Row>
                               </Col>
                             </Row>
+                          )}
+                        </Form>
+                      </div>
+                    </Col>
+                    <Col>
+                      <div className="ab">
+                        <Row>
+                          <Col xl={16}>
+                            <Button icon="close" ghost>
+                              Cancel Bill
+                            </Button>
+                            <Button icon="search" ghost>
+                              Ord Quickly
+                            </Button>
+                            <Button icon="menu" ghost>
+                              Top Menu
+                            </Button>
+                            <Button icon="deployment-unit" ghost>
+                              Request
+                            </Button>
+                            <Button icon="stop" ghost>
+                              Void
+                            </Button>
+                            <Button icon="appstore" ghost>
+                              Add On
+                            </Button>
+                            <Button icon="swap" ghost>
+                              Change Qty
+                            </Button>
+                            <Button icon="bars" ghost>
+                              Other Options
+                            </Button>
                           </Col>
-                          <Col xl={12}>
-                            <Row>
-                              <Col span={12}>
-                                <b>Tax Amount</b>
-                              </Col>
-                              <Col span={12}>
-                                <span>sdsd</span>
-                              </Col>
-                            </Row>
-                          </Col>
-                          <Col xl={12}>
-                            <Row>
-                              <Col span={12}>
-                                <b>Discount</b>
-                              </Col>
-                              <Col span={12}>
-                                <span>sdsd</span>
-                              </Col>
-                            </Row>
-                          </Col>
-                          <Col xl={12}>
-                            <Row>
-                              <Col span={12}>
-                                <b>Total Amount</b>
-                              </Col>
-                              <Col span={12}>
-                                <span>sdsd</span>
-                              </Col>
-                            </Row>
-                          </Col>
-                          <Col xl={12}>
-                            <Row>
-                              <Col span={12}>
-                                <b>Service Charge</b>
-                              </Col>
-                              <Col span={12}>
-                                <span>sdsd</span>
-                              </Col>
-                            </Row>
-                          </Col>
-                          <Col xl={12}>
-                            <Row>
-                              <Col span={12}>
-                                <b>Total Due</b>
-                              </Col>
-                              <Col span={12}>
-                                <span>sdsd</span>
-                              </Col>
-                            </Row>
-                          </Col>
-                          <Col xl={12}>
-                            <Row>
-                              <Col span={12}>
-                                <b>Special Tax</b>
-                              </Col>
-                              <Col span={12}>
-                                <span>sdsd</span>
-                              </Col>
-                            </Row>
-                          </Col>
-                          <Col xl={12}>
-                            <Row>
-                              <Col span={12}>
-                                <b>Due USD</b>
-                              </Col>
-                              <Col span={12}>
-                                <span>sdsd</span>
-                              </Col>
-                            </Row>
+                          <Col xl={6}>
+                            <Button icon="select" ghost style={{ height: 130 }}>
+                              Send Order
+                            </Button>
                           </Col>
                         </Row>
-                      </Form>
-                    </div>
-                  </Col>
-                  <Col>
-                    <div className="ab">
-                      <Row>
-                        <Col xl={16}>
-                          <Button icon="close" ghost>
-                            Cancel Bill
-                          </Button>
-                          <Button icon="search" ghost>
-                            Ord Quickly
-                          </Button>
-                          <Button icon="menu" ghost>
-                            Top Menu
-                          </Button>
-                          <Button icon="deployment-unit" ghost>
-                            Request
-                          </Button>
-                          <Button icon="stop" ghost>
-                            Void
-                          </Button>
-                          <Button icon="appstore" ghost>
-                            Add On
-                          </Button>
-                          <Button icon="swap" ghost>
-                            Change Qty
-                          </Button>
-                          <Button icon="bars" ghost>
-                            Other Options
-                          </Button>
-                        </Col>
-                        <Col xl={6}>
-                          <Button icon="select" ghost style={{ height: 130 }}>
-                            Send Order
-                          </Button>
-                        </Col>
-                      </Row>
-                    </div>
-                  </Col>
+                      </div>
+                    </Col>
+                  </div>
                 </Row>
               </div>
             </Col>
@@ -474,13 +577,15 @@ class TableDetail extends Component {
                     <div className="breadscrumb-menu">
                       <Breadcrumb>
                         <Breadcrumb.Item
-                          onClick={() => this.handleClickMenu(0, "")}
+                          onClick={() => this.handleClickMenu(0, "", "")}
                         >
                           <Icon type="home" />
                         </Breadcrumb.Item>
                         {bsMenus.map(bsm => (
                           <Breadcrumb.Item
-                            onClick={() => this.handleClickMenu(bsm.menuNo, "")}
+                            onClick={() =>
+                              this.handleClickMenu(bsm.menuNo, "", "")
+                            }
                           >
                             {bsm.menuName}
                           </Breadcrumb.Item>
@@ -492,14 +597,29 @@ class TableDetail extends Component {
                       <div className="menus-zone">
                         {menus.map(menu => (
                           <div
-                            className="order-item"
+                            className={`order-item ${currentMenu ===
+                              menu.menuNo && "active"}`}
                             onClick={() =>
-                              this.handleClickMenu(menu.menuNo, menu.menuName)
+                              this.handleClickMenu(
+                                menu.menuNo,
+                                menu.menuName,
+                                menu.hasSubMenu
+                              )
                             }
                           >
-                            <div className="oi-text">
-                              <p>{menu.menuName}</p>
-                            </div>
+                            <Row>
+                              <Col span={10}>
+                                <img
+                                  className="image"
+                                  src={`data:image/png;base64, ${menu.image}`}
+                                />
+                              </Col>
+                              <Col span={14}>
+                                <div className="oi-text">
+                                  <p>{menu.menuName}</p>
+                                </div>
+                              </Col>
+                            </Row>
                           </div>
                         ))}
                       </div>
@@ -517,11 +637,13 @@ class TableDetail extends Component {
                             <div className="p-text">
                               <p>
                                 <CurrencyFormat
-                                  value="123123"
+                                  value={mainMenu.price}
                                   displayType={"text"}
                                   thousandSeparator={true}
-                                  prefix={mainMenu.crSymbol}
                                 />
+                                <span className="symbol">
+                                  {mainMenu.crSymbol}
+                                </span>
                               </p>
                             </div>
                           </div>
@@ -539,28 +661,135 @@ class TableDetail extends Component {
   }
 }
 
-const dataSource = [];
+// const renderContent = (value, row, index) => {
+//   return row.description.trim() === "C.Guide" ? (
+//     <span className="req">{123}</span>
+//   ) : (
+//     <span
+//       className={`${row.pToOrder === 1 ? "green" : ""}
+//     ${row.pToCheck === 1 ? "red" : ""}`}
+//     >
+//       {value}
+//     </span>
+//   );
+// };
+// const renderCurrency = (value, row, index) => {
+//   return (
+//     <CurrencyFormat
+//       className={`${row.pToOrder === 1 ? "green" : ""}
+//   ${row.pToCheck === 1 ? "red" : ""}`}
+//       value={value}
+//       displayType={"text"}
+//       thousandSeparator={true}
+//     />
+//   );
+// };
 
 const columns = [
   {
-    title: "QTy",
-    dataIndex: "name",
-    key: "name"
+    title: "No",
+    dataIndex: "o",
+    key: "o",
+    render: (value, row) => {
+      return row.description.trim() === "C.Guide" ? (
+        <span className="req" />
+      ) : (
+        <span
+          className={`${row.pToOrder === 1 ? "green" : ""}
+        ${row.pToCheck === 1 ? "red" : ""}`}
+        >
+          {value}
+        </span>
+      );
+    }
   },
   {
     title: "Item Name",
-    dataIndex: "age",
-    key: "age"
+    dataIndex: "trnDesc",
+    key: "trnDesc",
+    width: 180,
+    render: (value, row) => {
+      return row.description.trim() === "C.Guide" ? (
+        <span className="req">{value}</span>
+      ) : (
+        <span
+          className={`${row.pToOrder === 1 ? "green" : ""}
+        ${row.pToCheck === 1 ? "red" : ""}`}
+        >
+          {value}
+        </span>
+      );
+    }
+  },
+  {
+    title: "QTy",
+    dataIndex: "trnQTy",
+    key: "trnQTy",
+    render: (value, row) => {
+      return row.description.trim() === "C.Guide" ? (
+        <span className="req" />
+      ) : (
+        <span
+          className={`${row.pToOrder === 1 ? "green" : ""}
+        ${row.pToCheck === 1 ? "red" : ""}`}
+        >
+          {value}
+        </span>
+      );
+    }
+  },
+  {
+    title: "Sub Amount",
+    dataIndex: "baseSub",
+    key: "baseSub",
+    render: (value, row) => {
+      return row.description.trim() === "C.Guide" ? (
+        <span className="req" />
+      ) : (
+        <CurrencyFormat
+          className={`${row.pToOrder === 1 ? "green" : ""} 
+      ${row.pToCheck === 1 ? "red" : ""}`}
+          value={value}
+          displayType={"text"}
+          thousandSeparator={true}
+        />
+      );
+    }
   },
   {
     title: "Amount",
-    dataIndex: "address",
-    key: "address"
+    dataIndex: "baseTrn",
+    key: "baseTrn",
+    render: (value, row) => {
+      return row.description.trim() === "C.Guide" ? (
+        <span className="req" />
+      ) : (
+        <CurrencyFormat
+          className={`${row.pToOrder === 1 ? "green" : ""} 
+      ${row.pToCheck === 1 ? "red" : ""}`}
+          value={value}
+          displayType={"text"}
+          thousandSeparator={true}
+        />
+      );
+    }
   },
   {
     title: "By",
-    dataIndex: "address",
-    key: "address"
+    dataIndex: "cashier",
+    key: "cashier",
+    render: (value, row) => {
+      return row.description.trim() === "C.Guide" ? (
+        <span className="req" />
+      ) : (
+        <span
+          className={`${row.pToOrder === 1 ? "green" : ""}
+        ${row.pToCheck === 1 ? "red" : ""}`}
+        >
+          {value}
+        </span>
+      );
+    }
   }
 ];
 

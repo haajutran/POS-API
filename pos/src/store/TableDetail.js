@@ -3,8 +3,8 @@ import * as dataServices from "../services/DataServices";
 const requestMenusType = "REQUEST_MENUS";
 const receiveMenusType = "RECEIVE_MENUS";
 
-const requestMainMenusType = "REQUEST_MAIN_MENUS";
-const receiveMainMenusType = "RECEIVE_MAIN_MENUS";
+const requestBillDetailType = "REQUEST_BILL_DETAIL";
+const receiveBillDetailType = "RECEIVE_BILL_DETAIL";
 
 const requestCourseType = "REQUEST_COURSE";
 const receiveCourseType = "RECEIVE_COURSE";
@@ -13,7 +13,8 @@ const initialState = {
   isLoading: false,
   menus: [],
   mainMenus: [],
-  course: []
+  course: [],
+  billDetail: []
 };
 
 export const actionCreators = {
@@ -26,17 +27,18 @@ export const actionCreators = {
       var menus = [];
       var mainMenus = [];
       if (menuNo === 0) {
-        res = await dataServices.get(`api/Order/GetMenu?RVCNo=${rvcNo}`);
+        res = await dataServices.get(`api/Menu/GetMenu?RVCNo=${rvcNo}`);
         menus = res.data;
+        console.log(res);
       } else {
         res = await dataServices.get(
-          `api/Order/GetMenu?RVCNo=${rvcNo}&sMenuID=${menuNo}`
+          `api/Menu/GetMenu?RVCNo=${rvcNo}&sMenuID=${menuNo}`
         );
         const menusTemp = res.data;
         console.log(menusTemp);
         if (menusTemp[0].dataReturn === "ITEM") {
           const res2 = await dataServices.get(
-            `api/Order/GetItemByMenu?RVCNo=${rvcNo}&sMenuID=${menuNo}&MyPeriod=1`
+            `api/Menu/GetItemByMenu?RVCNo=${rvcNo}&sMenuID=${menuNo}&MyPeriod=1`
           );
           if (res2.status === 200) {
             menus = menusState;
@@ -55,10 +57,29 @@ export const actionCreators = {
       dispatch({ type: receiveMenusType, menus: [], mainMenus: [] });
     }
   },
+  requestBillDetail: (
+    checkNo,
+    viewSum,
+    selectedGuest,
+    selectedCourse
+  ) => async dispatch => {
+    try {
+      dispatch({ type: requestBillDetailType });
+      const res = await dataServices.get(
+        `api/BillInfo/GetBillDetail?ViewSum=${viewSum}&SelectedGuest=${selectedGuest}&CheckNo=${checkNo}&SelectedCourse=${selectedCourse}`
+      );
+      if (res.status === 200) {
+        dispatch({ type: receiveBillDetailType, billDetail: res.data });
+      }
+    } catch (e) {
+      console.log(e.message);
+      dispatch({ type: receiveBillDetailType, billDetail: [] });
+    }
+  },
   requestCourse: () => async dispatch => {
     try {
       dispatch({ type: requestCourseType });
-      const res = await dataServices.get(`api/Order/GetCourse`);
+      const res = await dataServices.get(`api/BillInfo/GetCourse`);
       if (res.status === 200) {
         dispatch({ type: receiveCourseType, course: res.data });
       }
@@ -67,17 +88,37 @@ export const actionCreators = {
       dispatch({ type: receiveCourseType, course: [] });
     }
   },
-  getTableDetail: checkNo => async (dispatch, getState) => {
+  getTableDetail: checkNo => async () => {
     try {
       // console.log(getState());
       const rvcNo = sessionStorage.getItem("rvcNo");
       const posUser = sessionStorage.getItem("posUser");
       const getDetailRes = await dataServices.get(
-        `api/Order/GetInfoCheckNo?CheckNo=${checkNo}&RVCNo=${rvcNo}&UserLogin=${posUser}&WSID=hau`
+        `api/BillInfo/GetInfoCheckNo?CheckNo=${checkNo}&RVCNo=${rvcNo}&UserLogin=${posUser}&WSID=hau`
       );
       if (getDetailRes.status === 200) {
         return getDetailRes.data[0];
       }
+    } catch (e) {
+      console.log(e.message);
+    }
+  },
+  postItemManual: data => async () => {
+    try {
+      console.log(data);
+      const res = await dataServices.get(
+        `api/PostItem/PostItemMunual?CheckNo=${data.CheckNo}&ICode=${
+          data.ICode
+        }&isAddOn=${data.isAddOn}&ChangeOrderNo=${
+          data.ChangeOrderNo
+        }&SelectedGuest=${data.SelectedGuest}&SelectedCourse=${
+          data.SelectedCourse
+        }`
+      );
+      console.log(res.status);
+      // if (res.status === 200) {
+      //   return res.data[0];
+      // }
     } catch (e) {
       console.log(e.message);
     }
@@ -114,6 +155,20 @@ export const reducer = (state, action) => {
     return {
       ...state,
       course: action.course,
+      isLoading: false
+    };
+  }
+  if (action.type === requestBillDetailType) {
+    return {
+      ...state,
+      isLoading: true
+    };
+  }
+
+  if (action.type === receiveBillDetailType) {
+    return {
+      ...state,
+      billDetail: action.billDetail,
       isLoading: false
     };
   }

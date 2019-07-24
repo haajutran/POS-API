@@ -293,8 +293,7 @@
 }
 .nvf {
   background: #fff;
-  padding-top: 1em;
-  padding-bottom: 1em;
+  padding: 1em;
 }
 .no-valid-form .ant-form-item {
   margin-bottom: 0;
@@ -361,8 +360,8 @@
 }
 
 .order-item {
-  height: 75px;
-  width: 160px;
+  height: 85px;
+  width: 200px;
   padding: 10px;
   word-break: break-word;
   margin-right: 1em;
@@ -416,8 +415,74 @@
   padding-top: 1em;
 }
 .item-zone .order-item {
-  height: 90px;
+  height: 95px;
 }
 .p-text {
   height: 20px;
+}
+
+.p-text .symbol {
+  margin-left: 5px;
+}
+
+.order-item.active {
+  background: #19689c;
+}
+
+.order-item .image {
+  width: 40px;
+  margin-bottom: 5px;
+}
+.bill-detail-table .green {
+  color: #07e66b;
+}
+.bill-detail-table .red {
+  color: #f52044 !important;
+}
+.bill-detail-table .ant-table-pagination li {
+  min-width: 40px;
+  height: 40px;
+  line-height: 36px;
+}
+
+.bill-detail-table .req {
+  font-weight: bold;
+}
+
+.dt2-h {
+  background: rgba(50, 190, 255, 0.61);
+  padding: 1em;
+  border-radius: 5px;
+  -webkit-box-shadow: 6px 6px 10px -5px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 6px 6px 10px -5px rgba(0, 0, 0, 0.75);
+  box-shadow: 6px 6px 10px -5px rgba(0, 0, 0, 0.75);
+}
+
+.dt2-h .sz {
+  border-radius: 5px;
+  text-align: center;
+  margin: 0 1em;
+  height: 62px;
+  padding-top: 0.6em;
+  background: rgba(13, 141, 201, 0.863);
+  color: #fff;
+}
+
+.dt2-h .checkNo {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.dt2-h .hb-btn {
+  background: #33f78be0;
+  width: 100%;
+  height: 62px;
+}
+
+.close {
+  height: 0;
+  overflow: hidden;
+  background: red;
+  transition: all 0.3s linear;
+  /* transition: all 3s; */
 }

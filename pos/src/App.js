@@ -11,6 +11,7 @@ import TableMap from "./components/TableMap";
 import About from "./components/about";
 import Login from "./components/Login";
 import TableDetail from "./components/Table/Detail";
+import TableDetail2 from "./components/Table/Detail2";
 import DetailEmpty from "./components/Table/DetailEmpty";
 
 var currentUrl = window.location.pathname.split("/")[1];
@@ -36,6 +37,7 @@ function App() {
         <Route exact path="/" component={TableMap} />
         <Route path="/tablemap" component={TableMap} />
         <Route path="/tabledetail/:checkNo" component={TableDetail} />
+        <Route path="/tabledetail2/:checkNo" component={TableDetail2} />
         <Route path="/detailempty/:tableCode" component={DetailEmpty} />
         <Route path="/about" component={About} />
       </Switch>
