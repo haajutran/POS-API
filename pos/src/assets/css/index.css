@@ -417,6 +417,10 @@
 .item-zone .order-item {
   height: 95px;
 }
+
+.item-zone .items {
+  margin-top: 30px;
+}
 .p-text {
   height: 20px;
 }
@@ -434,7 +438,7 @@
   margin-bottom: 5px;
 }
 .bill-detail-table .green {
-  color: #07e66b;
+  color: #1bd870;
 }
 .bill-detail-table .red {
   color: #f52044 !important;
@@ -447,6 +451,7 @@
 
 .bill-detail-table .req {
   font-weight: bold;
+  color: #f32d9a;
 }
 
 .dt2-h {
@@ -485,4 +490,29 @@
   background: red;
   transition: all 0.3s linear;
   /* transition: all 3s; */
+}
+.quantity-zone {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 2em;
+}
+
+.quantity-zone .input {
+  text-align: center;
+  width: 55px;
+  height: 38px;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.quantity-zone .ant-btn {
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.alert-noti {
+  background: #fd1a54;
+}
+.alert-noti .ant-notification-notice-message {
+  color: #fff;
 }

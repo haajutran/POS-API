@@ -88,6 +88,18 @@ export const actionCreators = {
       dispatch({ type: receiveCourseType, course: [] });
     }
   },
+
+  sendOrder: checkNo => async dispatch => {
+    try {
+      const res = await dataServices.get(
+        `api/SendOrder/SendOrder?CheckNo=${checkNo}`
+      );
+      return res.status;
+    } catch (e) {
+      console.log(e.message);
+    }
+  },
+
   getTableDetail: checkNo => async () => {
     try {
       // console.log(getState());
@@ -111,11 +123,11 @@ export const actionCreators = {
           data.ICode
         }&isAddOn=${data.isAddOn}&ChangeOrderNo=${
           data.ChangeOrderNo
-        }&SelectedGuest=${data.SelectedGuest}&SelectedCourse=${
-          data.SelectedCourse
-        }`
+        }&Qty=${parseInt(data.Qty)}&SelectedGuest=${
+          data.SelectedGuest
+        }&SelectedCourse=${data.SelectedCourse}`
       );
-      console.log(res.status);
+      return res.status;
       // if (res.status === 200) {
       //   return res.data[0];
       // }

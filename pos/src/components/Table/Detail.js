@@ -11,10 +11,12 @@ import {
   Button,
   Table,
   Form,
-  Breadcrumb
+  Breadcrumb,
+  notification
 } from "antd";
 import moment from "moment";
 import * as CurrencyFormat from "react-currency-format";
+import BackspaceIcon from "../../assets/images/backspace-icon.png";
 
 class TableDetail extends Component {
   constructor(props) {
@@ -25,7 +27,8 @@ class TableDetail extends Component {
       selectedGuest: 0,
       selectedCourse: 0,
       currentMenu: "",
-      viewSum: 0
+      viewSum: 0,
+      quantity: "1"
     };
   }
 
@@ -136,30 +139,44 @@ class TableDetail extends Component {
   };
 
   handleClickMainMenu = async iCode => {
-    const { checkNo, selectedCourse, selectedGuest } = this.state;
-
+    const { checkNo, selectedCourse, selectedGuest, quantity } = this.state;
+    if (quantity === "0") {
+      notification.open({
+        message: "Quantity cannot be lower than 1!",
+        className: "alert-noti"
+      });
+      return;
+    }
     const data = {
       CheckNo: checkNo,
       ICode: iCode,
       isAddOn: false,
-      changeOrderNo: 0,
+      ChangeOrderNo: 0,
       SelectedCourse: selectedCourse,
+      Qty: quantity,
       SelectedGuest: selectedGuest
     };
     const res = await this.props.postItemManual(data);
-    console.log(res);
+    if (res === 200) {
+      await this.requestBillDetail();
+    }
   };
 
   selectGuest = async guest => {
     await this.setState({
       selectedGuest: guest
     });
+    await this.requestBillDetail();
+  };
+
+  requestBillDetail = async () => {
     const { checkNo, selectedGuest, selectedCourse, viewSum } = this.state;
+
     await this.props.requestBillDetail(
       checkNo,
       viewSum,
       selectedGuest,
-      selectedCourse
+      selectedCourse.courseCode
     );
   };
 
@@ -167,43 +184,66 @@ class TableDetail extends Component {
     await this.setState({
       selectedCourse: course
     });
-    const { checkNo, selectedGuest, selectedCourse, viewSum } = this.state;
-
-    await this.props.requestBillDetail(
-      checkNo,
-      viewSum,
-      selectedGuest,
-      selectedCourse.courseCode
-    );
+    await this.requestBillDetail();
   };
 
   sum = async () => {
-    // console.log(viewSum);
     await this.setState({
       viewSum: this.state.viewSum === 0 ? 1 : 0,
       selectedCourse: 0
     });
-    const { viewSum, checkNo, selectedGuest, selectedCourse } = this.state;
-    await this.props.requestBillDetail(
-      checkNo,
-      viewSum,
-      selectedGuest,
-      selectedCourse.courseCode
-    );
-    console.log("asdasd");
+    await this.requestBillDetail();
+  };
+
+  clickQuantity = quantity => {
+    var plus = "";
+    if (this.state.quantity === "0") {
+      console.log("object");
+      plus = quantity;
+    } else {
+      console.log(">1");
+      plus = this.state.quantity + "" + quantity;
+    }
+    this.setState({
+      quantity: plus
+    });
+  };
+
+  clickRemoveQuantity = () => {
+    const { quantity } = this.state;
+    console.log(quantity.length);
+
+    if (quantity.length === 1) {
+      this.setState({
+        quantity: "0"
+      });
+    } else if (quantity.length > 1) {
+      const minusQuantity = quantity.substring(0, quantity.length - 1);
+      this.setState({
+        quantity: minusQuantity
+      });
+    }
+  };
+
+  sendOrder = async () => {
+    const { checkNo } = this.state;
+    const sendOrderRes = await this.props.sendOrder(checkNo);
+    if (sendOrderRes === 200) {
+      await this.requestBillDetail();
+    }
   };
 
   render() {
     // const { isLoading, notiCashier } = this.props;
-    const { getFieldDecorator } = this.props.form;
-    const formItemLayout = {
-      labelCol: { span: 12 },
-      wrapperCol: { span: 12 }
-    };
-    const formItemLayout2 = {
-      labelCol: { span: 10 },
-      wrapperCol: { span: 14 }
-    };
+    // const { getFieldDecorator } = this.props.form;
+    // const formItemLayout = {
+    //   labelCol: { span: 12 },
+    //   wrapperCol: { span: 12 }
+    // };
+    // const formItemLayout2 = {
+    //   labelCol: { span: 10 },
+    //   wrapperCol: { span: 14 }
+    // };
     const {
       tableDetail,
       checkNo,
@@ -212,7 +252,8 @@ class TableDetail extends Component {
       selectedGuest,
       selectedCourse,
       currentMenu,
-      viewSum
+      viewSum,
+      quantity
     } = this.state;
     const { menus, mainMenus, course, billDetail } = this.props;
     // console.log(course);
@@ -292,6 +333,9 @@ class TableDetail extends Component {
                     <div className="if-t">
                       <Table
                         className="bill-detail-table"
+                        onRow={record => ({
+                          onClick: e => console.log(record)
+                        })}
                         dataSource={billDetail}
                         columns={columns}
                         size="default"
@@ -468,7 +512,12 @@ class TableDetail extends Component {
                             </Button>
                           </Col>
                           <Col xl={6}>
-                            <Button icon="select" ghost style={{ height: 130 }}>
+                            <Button
+                              icon="select"
+                              ghost
+                              style={{ height: 130 }}
+                              onClick={() => this.sendOrder()}
+                            >
                               Send Order
                             </Button>
                           </Col>
@@ -624,9 +673,102 @@ class TableDetail extends Component {
                         ))}
                       </div>
                       <div className="item-zone">
+                        {mainMenus && mainMenus.length > 0 && (
+                          <div className="quantity-zone">
+                            <Input
+                              readOnly
+                              className="input"
+                              value={quantity}
+                            />
+                            <Button
+                              shape="circle"
+                              size={"large"}
+                              onClick={() => this.clickQuantity("1")}
+                            >
+                              1
+                            </Button>
+                            <Button
+                              shape="circle"
+                              size={"large"}
+                              onClick={() => this.clickQuantity("2")}
+                            >
+                              2
+                            </Button>
+                            <Button
+                              shape="circle"
+                              size={"large"}
+                              onClick={() => this.clickQuantity("3")}
+                            >
+                              3
+                            </Button>
+                            <Button
+                              shape="circle"
+                              size={"large"}
+                              onClick={() => this.clickQuantity("4")}
+                            >
+                              4
+                            </Button>
+                            <Button
+                              shape="circle"
+                              size={"large"}
+                              onClick={() => this.clickQuantity("5")}
+                            >
+                              5
+                            </Button>
+                            <Button
+                              shape="circle"
+                              size={"large"}
+                              onClick={() => this.clickQuantity("6")}
+                            >
+                              6
+                            </Button>
+                            <Button
+                              shape="circle"
+                              size={"large"}
+                              onClick={() => this.clickQuantity("7")}
+                            >
+                              7
+                            </Button>
+                            <Button
+                              shape="circle"
+                              size={"large"}
+                              onClick={() => this.clickQuantity("8")}
+                            >
+                              8
+                            </Button>
+                            <Button
+                              shape="circle"
+                              size={"large"}
+                              onClick={() => this.clickQuantity("9")}
+                            >
+                              9
+                            </Button>
+                            <Button
+                              shape="circle"
+                              size={"large"}
+                              onClick={() => this.clickQuantity("0")}
+                            >
+                              0
+                            </Button>
+                            <Button
+                              shape="circle"
+                              size={"large"}
+                              onClick={() => this.clickRemoveQuantity()}
+                            >
+                              <img
+                                src={BackspaceIcon}
+                                style={{
+                                  width: 25,
+                                  paddingRight: 2,
+                                  paddingBottom: 2
+                                }}
+                              />
+                            </Button>
+                          </div>
+                        )}
                         {mainMenus.map(mainMenu => (
                           <div
-                            className="order-item main-item"
+                            className="order-item main-item "
                             onClick={() =>
                               this.handleClickMainMenu(mainMenu.iCode)
                             }
