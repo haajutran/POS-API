@@ -12,7 +12,8 @@ import {
   Table,
   Form,
   Breadcrumb,
-  notification
+  notification,
+  Modal
 } from "antd";
 import moment from "moment";
 import * as CurrencyFormat from "react-currency-format";
@@ -28,7 +29,8 @@ class TableDetail extends Component {
       selectedCourse: 0,
       currentMenu: "",
       viewSum: 0,
-      quantity: "1"
+      quantity: "0",
+      cQMVisible: false
     };
   }
 
@@ -140,12 +142,11 @@ class TableDetail extends Component {
 
   handleClickMainMenu = async iCode => {
     const { checkNo, selectedCourse, selectedGuest, quantity } = this.state;
+    var setQty = "";
     if (quantity === "0") {
-      notification.open({
-        message: "Quantity cannot be lower than 1!",
-        className: "alert-noti"
-      });
-      return;
+      setQty = 1;
+    } else {
+      setQty = quantity;
     }
     const data = {
       CheckNo: checkNo,
@@ -153,12 +154,60 @@ class TableDetail extends Component {
       isAddOn: false,
       ChangeOrderNo: 0,
       SelectedCourse: selectedCourse,
-      Qty: quantity,
+      Qty: setQty,
       SelectedGuest: selectedGuest
     };
     const res = await this.props.postItemManual(data);
     if (res === 200) {
       await this.requestBillDetail();
+    }
+  };
+
+  handleChangeQuantity = item => {
+    console.log(item);
+    if (item.ptoCheck === 0 && item.pToOrder === 0) {
+      this.setState({
+        currentCQ: item,
+        cQMVisible: true
+      });
+    }
+  };
+
+  handleCancelUpdateQuantity = async e => {
+    await this.setState({
+      cQMVisible: false,
+      currentCQ: null
+    });
+    console.log(this.state.currentCQ);
+  };
+
+  handleUpdateQuantity = async () => {
+    const { currentCQ } = this.state;
+    if (currentCQ.qTy === "0") {
+      notification.open({
+        message: "Quantity cannot be lower than 1!",
+        className: "alert-noti"
+      });
+      return;
+    }
+    const res = await this.props.updateQuantity(
+      currentCQ.trnSeq,
+      currentCQ.qTy
+    );
+    if (res === 200) {
+      await this.requestBillDetail();
+      notification.open({
+        message: "Update Successfully!",
+        className: "success-noti"
+      });
+      this.setState({
+        cQMVisible: false
+      });
+    } else {
+      notification.open({
+        message: "Update Failed!",
+        className: "alert-noti"
+      });
     }
   };
 
@@ -225,6 +274,39 @@ class TableDetail extends Component {
     }
   };
 
+  changeQuantity = quantity => {
+    var plus = "";
+    var currentCQ = this.state.currentCQ;
+    const qTy = currentCQ.qTy.toString();
+    if (qTy === "0") {
+      plus = quantity;
+    } else {
+      plus = qTy + "" + quantity;
+    }
+    currentCQ.qTy = plus;
+    this.setState({
+      currentCQ
+    });
+  };
+
+  clickRemoveChangeQuantity = () => {
+    const { currentCQ } = this.state;
+    const quantity = currentCQ.qTy.toString();
+
+    if (quantity.length === 1) {
+      currentCQ.qTy = "0";
+      this.setState({
+        currentCQ
+      });
+    } else if (quantity.length > 1) {
+      const minusQuantity = quantity.substring(0, quantity.length - 1);
+      currentCQ.qTy = minusQuantity;
+      this.setState({
+        currentCQ
+      });
+    }
+  };
+
   sendOrder = async () => {
     const { checkNo } = this.state;
     const sendOrderRes = await this.props.sendOrder(checkNo);
@@ -253,7 +335,8 @@ class TableDetail extends Component {
       selectedCourse,
       currentMenu,
       viewSum,
-      quantity
+      quantity,
+      currentCQ
     } = this.state;
     const { menus, mainMenus, course, billDetail } = this.props;
     // console.log(course);
@@ -334,7 +417,7 @@ class TableDetail extends Component {
                       <Table
                         className="bill-detail-table"
                         onRow={record => ({
-                          onClick: e => console.log(record)
+                          onClick: () => this.handleChangeQuantity(record)
                         })}
                         dataSource={billDetail}
                         columns={columns}
@@ -798,6 +881,135 @@ class TableDetail extends Component {
             </Col>
           </Row>
         )}
+        <Modal
+          title="Change Quantity"
+          visible={this.state.cQMVisible}
+          onOk={this.handleUpdateQuantity}
+          onCancel={this.handleCancelUpdateQuantity}
+        >
+          <div className="cq-item-info">
+            {currentCQ && (
+              <div>
+                <Row>
+                  <div className="cq-line">
+                    <Col span={8}>
+                      <b>No</b>
+                    </Col>
+                    <Col span={16}>
+                      <span>{currentCQ.o}</span>
+                    </Col>
+                  </div>
+                  <div className="cq-line">
+                    <Col span={8}>
+                      <b>Item Name</b>
+                    </Col>
+                    <Col span={16}>
+                      <span>{currentCQ.trnDesc}</span>
+                    </Col>
+                  </div>
+                  <div className="cq-line">
+                    <Col span={24}>
+                      <b>Quantity</b>
+                    </Col>
+                    <Col span={24}>
+                      <div className="quantity-zone">
+                        <Input
+                          readOnly
+                          className="input"
+                          value={currentCQ.qTy}
+                        />
+                        <Button
+                          shape="circle"
+                          size={"large"}
+                          onClick={() => this.changeQuantity("1")}
+                        >
+                          1
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size={"large"}
+                          onClick={() => this.changeQuantity("2")}
+                        >
+                          2
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size={"large"}
+                          onClick={() => this.changeQuantity("3")}
+                        >
+                          3
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size={"large"}
+                          onClick={() => this.changeQuantity("4")}
+                        >
+                          4
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size={"large"}
+                          onClick={() => this.changeQuantity("5")}
+                        >
+                          5
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size={"large"}
+                          onClick={() => this.changeQuantity("6")}
+                        >
+                          6
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size={"large"}
+                          onClick={() => this.changeQuantity("7")}
+                        >
+                          7
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size={"large"}
+                          onClick={() => this.changeQuantity("8")}
+                        >
+                          8
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size={"large"}
+                          onClick={() => this.changeQuantity("9")}
+                        >
+                          9
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size={"large"}
+                          onClick={() => this.changeQuantity("0")}
+                        >
+                          0
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size={"large"}
+                          onClick={() => this.clickRemoveChangeQuantity()}
+                        >
+                          <img
+                            src={BackspaceIcon}
+                            style={{
+                              width: 25,
+                              paddingRight: 2,
+                              paddingBottom: 2
+                            }}
+                          />
+                        </Button>
+                      </div>
+                    </Col>
+                  </div>
+                </Row>
+              </div>
+            )}
+          </div>
+        </Modal>
       </div>
     );
   }
@@ -809,7 +1021,7 @@ class TableDetail extends Component {
 //   ) : (
 //     <span
 //       className={`${row.pToOrder === 1 ? "green" : ""}
-//     ${row.pToCheck === 1 ? "red" : ""}`}
+//     ${row.ptoCheck === 1 ? "red" : ""}`}
 //     >
 //       {value}
 //     </span>
@@ -819,7 +1031,7 @@ class TableDetail extends Component {
 //   return (
 //     <CurrencyFormat
 //       className={`${row.pToOrder === 1 ? "green" : ""}
-//   ${row.pToCheck === 1 ? "red" : ""}`}
+//   ${row.ptoCheck === 1 ? "red" : ""}`}
 //       value={value}
 //       displayType={"text"}
 //       thousandSeparator={true}
@@ -838,7 +1050,7 @@ const columns = [
       ) : (
         <span
           className={`${row.pToOrder === 1 ? "green" : ""}
-        ${row.pToCheck === 1 ? "red" : ""}`}
+        ${row.ptoCheck === 1 ? "red" : ""}`}
         >
           {value}
         </span>
@@ -856,7 +1068,7 @@ const columns = [
       ) : (
         <span
           className={`${row.pToOrder === 1 ? "green" : ""}
-        ${row.pToCheck === 1 ? "red" : ""}`}
+        ${row.ptoCheck === 1 ? "red" : ""}`}
         >
           {value}
         </span>
@@ -873,7 +1085,7 @@ const columns = [
       ) : (
         <span
           className={`${row.pToOrder === 1 ? "green" : ""}
-        ${row.pToCheck === 1 ? "red" : ""}`}
+        ${row.ptoCheck === 1 ? "red" : ""}`}
         >
           {value}
         </span>
@@ -890,7 +1102,7 @@ const columns = [
       ) : (
         <CurrencyFormat
           className={`${row.pToOrder === 1 ? "green" : ""} 
-      ${row.pToCheck === 1 ? "red" : ""}`}
+      ${row.ptoCheck === 1 ? "red" : ""}`}
           value={value}
           displayType={"text"}
           thousandSeparator={true}
@@ -908,7 +1120,7 @@ const columns = [
       ) : (
         <CurrencyFormat
           className={`${row.pToOrder === 1 ? "green" : ""} 
-      ${row.pToCheck === 1 ? "red" : ""}`}
+      ${row.ptoCheck === 1 ? "red" : ""}`}
           value={value}
           displayType={"text"}
           thousandSeparator={true}
@@ -926,7 +1138,7 @@ const columns = [
       ) : (
         <span
           className={`${row.pToOrder === 1 ? "green" : ""}
-        ${row.pToCheck === 1 ? "red" : ""}`}
+        ${row.ptoCheck === 1 ? "red" : ""}`}
         >
           {value}
         </span>

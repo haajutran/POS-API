@@ -134,6 +134,19 @@ export const actionCreators = {
     } catch (e) {
       console.log(e.message);
     }
+  },
+  updateQuantity: (trnSeq, qTy) => async () => {
+    // console.log(trnSeq, qTy);
+    try {
+      const res = await dataServices.post(
+        `api/ChangeQty/ChangeQty?TrnSeq=${trnSeq}&NewQty=${qTy}`,
+        ""
+      );
+      console.log(res);
+      return res.status;
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 };
 

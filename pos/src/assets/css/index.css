@@ -499,10 +499,12 @@
 
 .quantity-zone .input {
   text-align: center;
-  width: 55px;
+  width: 70px;
   height: 38px;
   margin-right: 10px;
   margin-top: 10px;
+  border-color: #199bf1;
+  font-weight: bold;
 }
 
 .quantity-zone .ant-btn {
@@ -513,6 +515,21 @@
 .alert-noti {
   background: #fd1a54;
 }
+
 .alert-noti .ant-notification-notice-message {
   color: #fff;
+}
+
+.success-noti {
+  background: #1afd4b;
+}
+
+.success-noti .ant-notification-notice-message {
+  color: #fff;
+}
+
+.cq-zone {
+  width: 150px;
+  margin-top: 1em;
+  margin: auto;
 }
