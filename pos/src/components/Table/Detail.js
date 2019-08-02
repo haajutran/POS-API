@@ -30,7 +30,14 @@ class TableDetail extends Component {
       currentMenu: "",
       viewSum: 0,
       quantity: "0",
-      cQMVisible: false
+      cQMVisible: false,
+      aRMVisible: false,
+      selectedRow: "",
+      isOtherRequest: false,
+      otherRequest: "",
+      classRequests: [],
+      itemRequests: [],
+      isChoosingRequest: false
     };
   }
 
@@ -163,11 +170,16 @@ class TableDetail extends Component {
     }
   };
 
-  handleChangeQuantity = item => {
-    console.log(item);
-    if (item.ptoCheck === 0 && item.pToOrder === 0) {
+  handleChangeQuantity = () => {
+    const { selectedRow } = this.state;
+    if (selectedRow === "") {
+      notification.open({
+        message: "Please select item first!",
+        className: "alert-noti"
+      });
+    } else if (selectedRow.ptoCheck === 0 && selectedRow.pToOrder === 0) {
       this.setState({
-        currentCQ: item,
+        selectedRow: selectedRow,
         cQMVisible: true
       });
     }
@@ -175,15 +187,13 @@ class TableDetail extends Component {
 
   handleCancelUpdateQuantity = async e => {
     await this.setState({
-      cQMVisible: false,
-      currentCQ: null
+      cQMVisible: false
     });
-    console.log(this.state.currentCQ);
   };
 
   handleUpdateQuantity = async () => {
-    const { currentCQ } = this.state;
-    if (currentCQ.qTy === "0") {
+    const { selectedRow } = this.state;
+    if (selectedRow.qTy === "0") {
       notification.open({
         message: "Quantity cannot be lower than 1!",
         className: "alert-noti"
@@ -191,8 +201,8 @@ class TableDetail extends Component {
       return;
     }
     const res = await this.props.updateQuantity(
-      currentCQ.trnSeq,
-      currentCQ.qTy
+      selectedRow.trnSeq,
+      selectedRow.qTy
     );
     if (res === 200) {
       await this.requestBillDetail();
@@ -211,6 +221,63 @@ class TableDetail extends Component {
     }
   };
 
+  handleAddRequest = () => {
+    const { selectedRow } = this.state;
+    if (selectedRow === "") {
+      notification.open({
+        message: "Please select item first!",
+        className: "alert-noti"
+      });
+    } else if (selectedRow.ptoCheck === 0 && selectedRow.pToOrder === 0) {
+      this.props.requestRequests();
+      this.setState({
+        // currentCQ: selectedRow,
+        aRMVisible: true
+      });
+    }
+  };
+
+  addRequest = async (type, item) => {
+    console.log(item);
+    var data;
+    if (type === 2) {
+      data = {
+        ICode: item.iCode,
+        CGCode: item.idItem,
+        CGName: item.cgDescription,
+        Orther: false,
+        IClass: true,
+        Item: false
+      };
+    } else if (type === 3) {
+      data = {
+        ICode: item.iCode,
+        CGCode: item.idItem,
+        CGName: item.cgDescription,
+        Orther: false,
+        IClass: false,
+        Item: true
+      };
+    }
+
+    const res = await this.props.addRequest(data);
+    if (res === 200) {
+      this.requestBillDetail();
+      notification.open({
+        message: "Update Successfully!",
+        className: "success-noti"
+      });
+      this.handleCancelUpdateRequest();
+    }
+  };
+
+  handleCancelUpdateRequest = async () => {
+    await this.setState({
+      aRMVisible: false
+    });
+    this.clearRequests();
+  };
+
   selectGuest = async guest => {
     await this.setState({
       selectedGuest: guest
@@ -225,11 +292,12 @@ class TableDetail extends Component {
       checkNo,
       viewSum,
       selectedGuest,
-      selectedCourse.courseCode
+      selectedCourse.id
     );
   };
 
   selectCourse = async course => {
+    console.log(course);
     await this.setState({
       selectedCourse: course
     });
@@ -276,33 +344,33 @@ class TableDetail extends Component {
 
   changeQuantity = quantity => {
     var plus = "";
-    var currentCQ = this.state.currentCQ;
-    const qTy = currentCQ.qTy.toString();
+    var { selectedRow } = this.state;
+    const qTy = selectedRow.qTy.toString();
     if (qTy === "0") {
       plus = quantity;
     } else {
       plus = qTy + "" + quantity;
     }
-    currentCQ.qTy = plus;
+    selectedRow.qTy = plus;
     this.setState({
-      currentCQ
+      selectedRow
     });
   };
 
   clickRemoveChangeQuantity = () => {
-    const { currentCQ } = this.state;
-    const quantity = currentCQ.qTy.toString();
+    const { selectedRow } = this.state;
+    const quantity = selectedRow.qTy.toString();
 
     if (quantity.length === 1) {
-      currentCQ.qTy = "0";
+      selectedRow.qTy = "0";
       this.setState({
-        currentCQ
+        selectedRow
       });
     } else if (quantity.length > 1) {
       const minusQuantity = quantity.substring(0, quantity.length - 1);
-      currentCQ.qTy = minusQuantity;
+      selectedRow.qTy = minusQuantity;
       this.setState({
-        currentCQ
+        selectedRow
       });
     }
   };
@@ -312,6 +380,103 @@ class TableDetail extends Component {
     const sendOrderRes = await this.props.sendOrder(checkNo);
     if (sendOrderRes === 200) {
       await this.requestBillDetail();
+    }
+  };
+
+  handleSelectRequest = async reqCode => {
+    const { selectedRow } = this.state;
+    const itemCode = selectedRow.itemCode;
+    const trnCode = selectedRow.trnCode;
+    if (reqCode === 1) {
+      this.setState({
+        isOtherRequest: true
+      });
+    } else if (reqCode === 2) {
+      console.log("class");
+      const res = await this.props.getClassRequest(itemCode, trnCode);
+      if (res.status === 200) {
+        const classRequests = res.data;
+        this.setState({
+          classRequests
+        });
+      }
+    } else if (reqCode === 3) {
+      console.log("item");
+      const res = await this.props.getItemRequest(itemCode, trnCode);
+      if (res.status === 200) {
+        const itemRequests = res.data;
+        this.setState({
+          itemRequests
+        });
+      }
+    }
+    this.setState({
+      isChoosingRequest: true
+    });
+  };
+
+  handlePrevBtn = () => {
+    this.clearRequests();
+  };
+
+  handleUpdateRequest = async () => {
+    const { otherRequest, selectedRow } = this.state;
+
+    if (otherRequest.length > 0) {
+      const data = {
+        ICode: selectedRow.itemCode,
+        CGCode: 0,
+        CGName: otherRequest,
+        Orther: true,
+        IClass: false,
+        Item: false
+      };
+      const res = await this.props.addRequest(data);
+      if (res === 200) {
+        this.requestBillDetail();
+        this.handleCancelUpdateRequest();
+      }
+    }
+    this.clearRequests();
+  };
+
+  clearRequests = () => {
+    this.setState({
+      isChoosingRequest: false,
+      isOtherRequest: false,
+      otherRequest: "",
+      itemRequests: [],
+      classRequests: []
+    });
+  };
+
+  handleChangeInputOtherRequest = event => {
+    this.setState({
+      otherRequest: event.target.value
+    });
+  };
+
+  selectRow = record => {
+    console.log(record);
+    this.setState({
+      selectedRow: record
+    });
+  };
+
+  hold = async () => {
+    const { checkNo } = this.state;
+    const orderHoldRes = await this.props.getOrderHold(checkNo);
+    console.log(orderHoldRes);
+    if (orderHoldRes.status === 200) {
+      const oHList = orderHoldRes.data;
+      if (oHList.length > 0) {
+        const idHoldMainRes = await this.props.getIDHoldMain();
+        if (idHoldMainRes.status === 200) {
+          const IDHoldMain = idHoldMainRes.data.getIDHold;
+          const CreateTime = idHoldMainRes.data.createTime;
+          // oHList
+        }
+      }
     }
   };
 
@@ -336,11 +501,17 @@ class TableDetail extends Component {
       currentMenu,
       viewSum,
       quantity,
-      currentCQ
+      // selectedRow,
+      selectedRow,
+      otherRequest,
+      classRequests,
+      itemRequests,
+      isChoosingRequest,
+      isOtherRequest
     } = this.state;
-    const { menus, mainMenus, course, billDetail } = this.props;
+    const { menus, mainMenus, course, billDetail, requests } = this.props;
     // console.log(course);
-    console.log(billDetail);
+    console.log(requests);
     return (
       <div className="detail-page">
         {tableDetail && (
@@ -417,8 +588,12 @@ class TableDetail extends Component {
                       <Table
                         className="bill-detail-table"
                         onRow={record => ({
-                          onClick: () => this.handleChangeQuantity(record)
+                          onClick: () => this.selectRow(record)
+                          // this.handleChangeQuantity(record)
                         })}
+                        rowClassName={(record, index) =>
+                          record.o === selectedRow.o ? "selected-row" : ""
+                        }
                         dataSource={billDetail}
                         columns={columns}
                         size="default"
@@ -436,7 +611,12 @@ class TableDetail extends Component {
                         onClick={() => this.sum()}
                       />
                       <Button type="primary" icon="scissor" size="large" />
-                      <Button type="primary" icon="alert" size="large" />
+                      <Button
+                        type="primary"
+                        icon="pause-circle"
+                        size="large"
+                        onClick={() => this.hold()}
+                      />
                     </div>
                   </Col>
                   <div className={`bz ${viewSum === 1 ? `close` : ``}`}>
@@ -578,7 +758,11 @@ class TableDetail extends Component {
                             <Button icon="menu" ghost>
                               Top Menu
                             </Button>
-                            <Button icon="deployment-unit" ghost>
+                            <Button
+                              icon="deployment-unit"
+                              ghost
+                              onClick={() => this.handleAddRequest()}
+                            >
                               Request
                             </Button>
                             <Button icon="stop" ghost>
@@ -587,7 +771,11 @@ class TableDetail extends Component {
                             <Button icon="appstore" ghost>
                               Add On
                             </Button>
-                            <Button icon="swap" ghost>
+                            <Button
+                              icon="swap"
+                              ghost
+                              onClick={() => this.handleChangeQuantity()}
+                            >
                               Change Qty
                             </Button>
                             <Button icon="bars" ghost>
@@ -888,7 +1076,7 @@ class TableDetail extends Component {
           onCancel={this.handleCancelUpdateQuantity}
         >
           <div className="cq-item-info">
-            {currentCQ && (
+            {selectedRow && (
               <div>
                 <Row>
                   <div className="cq-line">
@@ -896,7 +1084,7 @@ class TableDetail extends Component {
                       <b>No</b>
                     </Col>
                     <Col span={16}>
-                      <span>{currentCQ.o}</span>
+                      <span>{selectedRow.o}</span>
                     </Col>
                   </div>
                   <div className="cq-line">
@@ -904,7 +1092,7 @@ class TableDetail extends Component {
                       <b>Item Name</b>
                     </Col>
                     <Col span={16}>
-                      <span>{currentCQ.trnDesc}</span>
+                      <span>{selectedRow.trnDesc}</span>
                     </Col>
                   </div>
                   <div className="cq-line">
@@ -916,7 +1104,7 @@ class TableDetail extends Component {
                         <Input
                           readOnly
                           className="input"
-                          value={currentCQ.qTy}
+                          value={selectedRow.qTy}
                         />
                         <Button
                           shape="circle"
@@ -1006,6 +1194,77 @@ class TableDetail extends Component {
                     </Col>
                   </div>
                 </Row>
+              </div>
+            )}
+          </div>
+        </Modal>
+
+        <Modal
+          title="Add Request"
+          visible={this.state.aRMVisible}
+          onOk={this.handleUpdateRequest}
+          onCancel={this.handleCancelUpdateRequest}
+        >
+          <div>
+            {isChoosingRequest ? (
+              <div>
+                <div className="prev-btn" onClick={() => this.handlePrevBtn()}>
+                  <Button icon="left" type="primary" />
+                </div>
+                {isOtherRequest && (
+                  <div>
+                    <h3>Other Request</h3>
+                    <Input.TextArea
+                      value={otherRequest}
+                      onChange={this.handleChangeInputOtherRequest}
+                    />
+                  </div>
+                )}
+                {itemRequests && itemRequests.length > 0 && (
+                  <div>
+                    <h3>Item Request</h3>
+                    {itemRequests.map(req => (
+                      <Button
+                        ghost
+                        type="primary"
+                        className="request-btn"
+                        onClick={() => this.addRequest(3, req)}
+                      >
+                        {req.cgDescription}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+                {classRequests && classRequests.length > 0 && (
+                  <div>
+                    <h3>Class Request</h3>
+                    {classRequests.map(req => (
+                      <Button
+                        ghost
+                        type="primary"
+                        className="request-btn"
+                        onClick={() => this.addRequest(2, req)}
+                        // onClick={() => this.handleSelectRequest(req.code)}
+                      >
+                        {req.cgDescription}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div>
+                {requests &&
+                  requests.map(req => (
+                    <Button
+                      ghost
+                      type="primary"
+                      className="request-btn"
+                      onClick={() => this.handleSelectRequest(req.code)}
+                    >
+                      {req.request}
+                    </Button>
+                  ))}
               </div>
             )}
           </div>

@@ -533,3 +533,27 @@
   margin-top: 1em;
   margin: auto;
 }
+
+.selected-row {
+  background: rgb(46, 241, 255) !important;
+  /* color: #fff; */
+}
+
+.selected-row:hover {
+  background: none;
+}
+.bill-detail-table .ant-table-thead > tr:hover > td,
+.bill-detail-table .ant-table-tbody > tr:hover > td {
+  background: rgba(164, 247, 252, 0.219) !important;
+}
+
+.request-btn {
+  width: 200px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.prev-btn {
+  margin-bottom: 1em;
+}

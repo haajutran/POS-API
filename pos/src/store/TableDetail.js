@@ -9,12 +9,16 @@ const receiveBillDetailType = "RECEIVE_BILL_DETAIL";
 const requestCourseType = "REQUEST_COURSE";
 const receiveCourseType = "RECEIVE_COURSE";
 
+const requestRequestType = "REQUEST_REQUEST";
+const receiveRequestType = "RECEIVE_REQUEST";
+
 const initialState = {
   isLoading: false,
   menus: [],
   mainMenus: [],
   course: [],
-  billDetail: []
+  billDetail: [],
+  requests: []
 };
 
 export const actionCreators = {
@@ -142,8 +146,88 @@ export const actionCreators = {
         `api/ChangeQty/ChangeQty?TrnSeq=${trnSeq}&NewQty=${qTy}`,
         ""
       );
-      console.log(res);
       return res.status;
+    } catch (e) {
+      console.log(e.message);
+    }
+  },
+  requestRequests: () => async dispatch => {
+    try {
+      dispatch({ type: requestRequestType });
+      const res = await dataServices.post(`api/AddRequest/GetRequest`, "");
+      console.log(res);
+      if (res.status === 200) {
+        dispatch({ type: receiveRequestType, requests: res.data });
+      }
+    } catch (e) {
+      dispatch({ type: receiveRequestType, requests: [] });
+      console.log(e.message);
+    }
+  },
+
+  getItemRequest: (itemCode, trnCode) => async () => {
+    // console.log(trnSeq, qTy);
+    try {
+      const res = await dataServices.post(
+        `api/AddRequest/GetItemRequest?ItemCode=${itemCode}&TrnCode=${trnCode}`,
+        ""
+      );
+      return res;
+    } catch (e) {
+      console.log(e.message);
+    }
+  },
+  getClassRequest: (itemCode, trnCode) => async () => {
+    // console.log(trnSeq, qTy);
+    try {
+      const res = await dataServices.post(
+        `api/AddRequest/GetClassRequest?ItemCode=${itemCode}&TrnCode=${trnCode}`,
+        ""
+      );
+      return res;
+    } catch (e) {
+      console.log(e.message);
+    }
+  },
+  addRequest: data => async () => {
+    try {
+      const url = `api/AddRequest/AddRequest?ICode=${data.ICode}&CGCode=${
+        data.CGCode
+      }&CGName=${data.CGName}&Orther=${data.Orther}&IClass=${
+        data.IClass
+      }&Item=${data.Item}`;
+      const res = await dataServices.post(
+        `api/AddRequest/AddRequest?ICode=${data.ICode}&CGCode=${
+          data.CGCode
+        }&CGName=${data.CGName}&Orther=${data.Orther}&IClass=${
+          data.IClass
+        }&Item=${data.Item}`,
+        ""
+      );
+      console.log(url);
+      return res.status;
+    } catch (e) {
+      console.log(e.message);
+    }
+  },
+  getOrderHold: checkNo => async () => {
+    try {
+      const res = await dataServices.get(
+        `api/HoldItem/GetOrderHold?CheckNo=${checkNo}`
+      );
+      return res;
+    } catch (e) {
+      console.log(e.message);
+    }
+  },
+
+  getIDHoldMain: () => async () => {
+    try {
+      const rvcNo = sessionStorage.getItem("rvcNo");
+      const res = await dataServices.get(
+        `api/HoldItem/GetIDHoldMain?RVCNo=${rvcNo}`
+      );
+      return res;
     } catch (e) {
       console.log(e.message);
     }
@@ -197,5 +281,21 @@ export const reducer = (state, action) => {
       isLoading: false
     };
   }
+
+  if (action.type === requestRequestType) {
+    return {
+      ...state,
+      isLoading: true
+    };
+  }
+
+  if (action.type === receiveRequestType) {
+    return {
+      ...state,
+      requests: action.requests,
+      isLoading: false
+    };
+  }
+
   return state;
 };
